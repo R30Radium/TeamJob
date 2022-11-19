@@ -1,6 +1,7 @@
 package telegram.teamjob.model;
 
-import telegram.teamjob.model.repositories.ContactRepository;
+
+import telegram.teamjob.repositories.ContactRepository;
 
 import javax.persistence.*;
 import java.util.Objects;

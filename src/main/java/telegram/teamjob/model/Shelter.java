@@ -1,8 +1,6 @@
 package telegram.teamjob.model;
 
-
-
-import telegram.teamjob.model.repositories.ShelterRepository;
+import telegram.teamjob.repositories.ShelterRepository;
 
 import javax.persistence.*;
 
