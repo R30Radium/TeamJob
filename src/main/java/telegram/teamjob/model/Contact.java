@@ -58,7 +58,8 @@ public class Contact {
         if(this == o) return true;
         if(o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return  name == contact.getName() && Objects.equals(id, contact.id) && Objects.equals(numberPhone, contact.numberPhone);
+        return  name == contact.getName() && Objects.equals(id, contact.id) &&
+                Objects.equals(numberPhone, contact.numberPhone);
     }
 
 

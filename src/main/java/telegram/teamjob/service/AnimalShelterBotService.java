@@ -92,7 +92,17 @@ public class AnimalShelterBotService implements UpdatesListener {
                             update.callbackQuery().data().equals("workTime")||
                             update.callbackQuery().data().equals("contact") ) {
                         sendAnswer(update);
-                    }
+                    } else if
+                        (update.callbackQuery().data().equals("rules") ||
+                            update.callbackQuery().data().equals("transportation)") ||
+                            update.callbackQuery().data().equals("arrangementPuppy") ||
+                            update.callbackQuery().data().equals("arrangementDog") ||
+                            update.callbackQuery().data().equals("arrangementDogInvalid")||
+                            update.callbackQuery().data().equals("cynologist") ||
+                            update.callbackQuery().data().equals("reject") ||
+                            update.callbackQuery().data().equals("contact") ||
+                            update.callbackQuery().data().equals("help") )
+                        sendAnswer(update);
                 }
             }
         });
@@ -157,6 +167,82 @@ public class AnimalShelterBotService implements UpdatesListener {
                 EditMessageText messageText4 = new EditMessageText(chatId, (int) messageId, newMessage4);
                 telegramBot.execute(messageText4);
                 break;
+
+                /*
+            case "TEXT21_BUTTON":
+                // Правила
+                String newMessage21 = "Кнопка 1 работает";
+                EditMessageText messageText = new EditMessageText(chatId,
+                        (int) messageId, newMessage);
+                telegramBot.execute(messageText);
+                break;
+            case "TEXT22_BUTTON":
+                // Необходимо заменить на вывод инструкции
+                String newMessage22 = "Кнопка 2 работает";
+                EditMessageText messageText2 = new EditMessageText(chatId,
+                        (int) messageId, newMessage2);
+                telegramBot.execute(messageText2);
+                break;
+            case "TEXT3_BUTTON":
+                //Отчет по питомцу
+                String newMessage23 = "Кнопка 3 работает";
+                EditMessageText messageText3 = new EditMessageText(chatId,
+                        (int) messageId, newMessage3);
+                telegramBot.execute(messageText3);
+                break;
+            case "TEXT4_BUTTON":
+                //Обращение к волонтеру
+                String newMessage24 = "Вы можете обратиться к волонтеру @RRRNikita";
+                EditMessageText messageText4 = new EditMessageText(chatId,
+                            (int) messageId, newMessage4);
+                telegramBot.execute(messageText4);
+                break;
+            case "TEXT5_BUTTON":
+                // Рекомендации щенку
+                String newMessage25 = "Кнопка 5 работает";
+                EditMessageText messageText5 = new EditMessageText(chatId,
+                        (int) messageId, newMessage5);
+                telegramBot.execute(messageText5);
+                break;
+            case "TEXT6_BUTTON":
+                // рекомендации взрослой собаке
+                String newMessage26 = "Кнопка 6 работает";
+                EditMessageText messageText6 = new EditMessageText(chatId,
+                        (int) messageId, newMessage6);
+                telegramBot.execute(messageText6);
+                break;
+            case "TEXT7_BUTTON":
+                // кинолог
+                String newMessage27 = "Кнопка 7 работает";
+                EditMessageText messageText7 = new EditMessageText(chatId,
+                        (int) messageId, newMessage7);
+                telegramBot.execute(messageText7);
+                break;
+            case "TEXT8_BUTTON":
+                // контакты
+                String newMessage28 = "Кнопка 8 работает";
+                EditMessageText messageText8 = new EditMessageText(chatId,
+                        (int) messageId, newMessage8);
+                telegramBot.execute(messageText8);
+                break;
+
+            case "TEXT9_BUTTON":
+                // возможнные причины для отказа
+                String newMessage29 = "Кнопка 9 работает";
+                EditMessageText messageText9 = new EditMessageText(chatId,
+                        (int) messageId, newMessage9);
+                telegramBot.execute(messageText9);
+                break;
+
+            case "TEXT10_BUTTON":
+                //Обращение к волонтеру
+                String newMessage20 = "Кнопка 10 работает";
+                EditMessageText messageText10 = new EditMessageText(chatId,
+                        (int) messageId, newMessage10);
+                telegramBot.execute(messageText10);
+                break;
+
+                 */
         }
     }
     /**
@@ -196,9 +282,9 @@ public class AnimalShelterBotService implements UpdatesListener {
     private InlineKeyboardMarkup makeButtonsForMenu() {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         var buttonAboutShelter  = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_INFORMATION_ABOUT_SHELTER.getText());
-        var  buttonWorkTime = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_WORK_SCHEDULE_SHELTER.getText());
-        var  buttonAddress = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_ADDRESS_SHELTER.getText());
-        var   buttonWay = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_DRIVING_DIRECTIONS.getText());
+        var buttonWorkTime = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_WORK_SCHEDULE_SHELTER.getText());
+        var buttonAddress = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_ADDRESS_SHELTER.getText());
+        var buttonWay = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_DRIVING_DIRECTIONS.getText());
         var buttonSafety = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_SAFETY_SHELTER.getText());
         var buttonContact = new com.pengrad.telegrambot.model.request.InlineKeyboardButton("Оставить данные для связи");
         var buttonVolunteer = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_CALL_VOLUNTEER.getText());
@@ -218,10 +304,59 @@ public class AnimalShelterBotService implements UpdatesListener {
         markup.addRow(buttonSafety);
         markup.addRow(buttonContact);
         markup.addRow(buttonVolunteer);
-
-
         return markup;
     }
+
+    /*
+    private InlineKeyboardMarkup secondMenuButtons() {
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        String rules = " Правила знакомства с животным ";
+        String docs = " Список необходимых документов ";
+        String transportation = " Рекомендация по транспортировке ";
+        String arrangementPuppy = " Рекомендации по устройству дома для щенка ";
+        String arrangementDog = " Рекомендации по устройству дома для взрослой собаки ";
+        String arrangementDogInvalid = " Рекомендации по устройству дома для собаки с " +
+                " ограниченными возможностями ";
+        String cynologist= " Рекомендации по общению с собакой от кинологов";
+        String reject = " Спиоск причин отказа ";
+        String contact = " Контактные данные ";
+        String help = " Позвать волонтера ";
+
+        var button1Rules = new InlineKeyboardButton(rules);
+        var button2Docs = new InlineKeyboardButton(docs);
+        var button3Transportation = new InlineKeyboardButton(transportation);
+        var button4ArrangementPuppy = new InlineKeyboardButton(arrangementPuppy);
+        var button5ArrangementDog = new InlineKeyboardButton(arrangementDog);
+        var button6ArrangementDogInvalid = new InlineKeyboardButton(arrangementDogInvalid);
+        var button7Cynologist = new InlineKeyboardButton(cynologist);
+        var button8Reject = new InlineKeyboardButton(reject);
+        var button9Contact = new InlineKeyboardButton(contact);
+        var button10Help = new InlineKeyboardButton(help);
+
+        button1Rules.callbackData("TEXT2.1_BUTTON");
+        button2Docs.callbackData("TEXT2.2_BUTTON");
+        button3Transportation.callbackData("TEXT2.3_BUTTON");
+        button4ArrangementPuppy.callbackData("TEXT2.4_BUTTON");
+        button5ArrangementDog.callbackData("TEXT2.5_BUTTON");
+        button6ArrangementDogInvalid.callbackData("TEXT2.6_BUTTON");
+        button7Cynologist.callbackData("TEXT2.7_BUTTON");
+        button8Reject.callbackData("TEXT2.8_BUTTON");
+        button9Contact.callbackData("TEXT2.9_BUTTON");
+        button10Help.callbackData("TEXT2.10_BUTTON");
+
+        markup.addRow(button1Rules);
+        markup.addRow(button2Docs);
+        markup.addRow(button3Transportation);
+        markup.addRow(button4ArrangementPuppy);
+        markup.addRow(button5ArrangementDog);
+        markup.addRow(button6ArrangementDogInvalid);
+        markup.addRow(button7Cynologist);
+        markup.addRow(button8Reject);
+        markup.addRow(button9Contact);
+        markup.addRow(button10Help);
+        return markup;
+    }
+    */
 
     /**
      * метод обрабатывает ответ поступивший от пользователя, выбравшего соотвествующий <br>
