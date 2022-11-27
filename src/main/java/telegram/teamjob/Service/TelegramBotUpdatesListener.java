@@ -2,25 +2,38 @@ package telegram.teamjob.Service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.List;
 
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
+    private boolean flag;
     private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+    private final UserService userService;
+    private final RecordService recordService;
+    private final PetPhotoService petPhotoService;
 
     @Autowired
     private TelegramBot telegramBot;
+
+    public TelegramBotUpdatesListener(UserService userService, RecordService recordService, PetPhotoService petPhotoService) {
+        this.userService = userService;
+        this.recordService = recordService;
+        this.petPhotoService = petPhotoService;
+    }
 
     @PostConstruct
     public void init() {
@@ -30,16 +43,32 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
-            if (update.callbackQuery() == null) {
-                logger.info("Processing update: {}", update);
-                checkAnswer(update);
-            }
-            else if (update.callbackQuery() != null) {
-                logger.info("CallBackQuery processing");
-                checkButtonAnswer(update);
+            try {
+                messageHandler(update);
+            } catch (Exception e) {
+                throw new RuntimeException("ERROR");
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
+    }
+
+    private void messageHandler(Update update) {
+        if (update.callbackQuery() != null) {
+            logger.info("CallBackQuery processing");
+            checkButtonAnswer(update);
+        } else if (update.message().photo() != null) {
+            logger.info("Photo Upload processing");
+            long recordId = recordService.findRecordId(update);
+            PhotoSize[] photos = update.message().photo();
+            try {
+                petPhotoService.uploadPhoto(recordId, photos);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            logger.info("Processing update: {}", update);
+            checkAnswer(update);
+        }
     }
 
     private SendMessage sendMessage(long chatId, String textToSend) {
@@ -58,14 +87,42 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     }
 
     private void checkAnswer(Update update) {
-        switch (update.message().text()) {
-            case "/start":
+        Long chatId = update.message().chat().id();
+        String inputText = update.message().text();
+        if (inputText != null) {
+            if (inputText.equals("/start")) {
                 sendGreetingMessage(update);
-                logger.info("checkAnswer: case /start");
-                break;
-            default:
-                telegramBot.execute(sendMessage(update.message().chat().id(),
-                        "Вы можете обратиться к волонтеру @LnBgrn"));
+            } else if (inputText.equals("/createuser")) {
+                telegramBot.execute(sendMessage(chatId, "Введите данные в формате: Имя мобильный имя петомца (при наличии)"));
+            } else if (inputText.matches("([A-zА-я]+)(\\s)([0-9]+)(\\s)([A-zА-я]+)")) {
+                logger.info("Processing checkAnswer:");
+                userService.createUser(update);
+            } else if (inputText.equals("/send-record")) {
+                String messageForRecords = "В ежедневный отчет входит следующая информация: \n" +
+                        "\n" +
+                        "- Фото животного.\n" +
+                        "- Рацион животного.\n" +
+                        "- Общее самочувствие и привыкание к новому месту.\n" +
+                        "- Изменение в поведении: отказ от старых привычек, приобретение новых.\n" +
+                        "\n" +
+                        "Отчет нужно присылать каждый день, ограничений в сутках по времени сдачи отчета нет.";
+                telegramBot.execute(sendMessage(chatId, messageForRecords));
+            } else if (flag) {
+                logger.info("Processing creating record");
+                // Нужен if На случай некорректного сообщения
+                if (userService.getUser(chatId) != null) {
+                    recordService.createRecord(update);
+                } else {
+                    telegramBot.execute(sendMessage(chatId, "Вас нет в базе\n" +
+                            "Введите данные в формате: Имя мобильный имя петомца (при наличии)\n" +
+                            "И пришлите отчет ещё раз"));
+                }
+                flag = false;
+            } else {
+                telegramBot.execute(sendMessage(chatId, "Вы можете обратиться к волонтеру @LnBgrn"));
+            }
+        } else {
+            telegramBot.execute(sendMessage(chatId, "Вы можете обратиться к волонтеру @LnBgrn"));
         }
     }
 
@@ -123,9 +180,17 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 break;
             case "TEXT3_BUTTON":
                 //Отчет по питомцу
-                String newMessage3 = "Кнопка 3 работает";
-                EditMessageText messageText3 = new EditMessageText(chatId, (int) messageId, newMessage3);
+                String messageForRecords = "*В ежедневный отчет входит следующая информация:* \n" +
+                        "\n" +
+                        "- *Фото животного.*\n" +
+                        "- *Рацион животного.*\n" +
+                        "- *Общее самочувствие и привыкание к новому месту.*\n" +
+                        "- *Изменение в поведении: отказ от старых привычек, приобретение новых.*\n" +
+                        "\n" +
+                        "*Отчет нужно присылать каждый день, ограничений в сутках по времени сдачи отчета нет.*";
+                EditMessageText messageText3 = new EditMessageText(chatId, (int) messageId, messageForRecords);
                 telegramBot.execute(messageText3);
+                 flag = true;
                 break;
             case "TEXT4_BUTTON":
                 //Обращение к волонтеру
