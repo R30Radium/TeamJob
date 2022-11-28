@@ -1,20 +1,15 @@
-package telegram.teamjob.Service;
+package telegram.teamjob.service;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-import com.pengrad.telegrambot.model.Document;
 import com.pengrad.telegrambot.model.PhotoSize;
-import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.entity.PetPhoto;
-import telegram.teamjob.entity.Record;
+import telegram.teamjob.model.PetPhoto;
+import telegram.teamjob.model.Record;
 import telegram.teamjob.repository.PetPhotoRepository;
 import telegram.teamjob.repository.RecordRepository;
 

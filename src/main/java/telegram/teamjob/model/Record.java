@@ -1,7 +1,6 @@
-package telegram.teamjob.entity;
+package telegram.teamjob.model;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 

@@ -1,9 +1,6 @@
-package telegram.teamjob.entity;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+package telegram.teamjob.model;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Objects;
 
 @Entity

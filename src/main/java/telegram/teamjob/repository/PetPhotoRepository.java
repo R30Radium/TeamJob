@@ -1,8 +1,7 @@
 package telegram.teamjob.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import telegram.teamjob.entity.PetPhoto;
+import telegram.teamjob.model.PetPhoto;
 
 import java.util.Optional;
 

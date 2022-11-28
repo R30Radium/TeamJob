@@ -1,7 +1,6 @@
-package telegram.teamjob.entity;
+package telegram.teamjob.model;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.Objects;
 
 @Entity

@@ -2,6 +2,7 @@ package telegram.teamjob.service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
@@ -10,12 +11,15 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import telegram.teamjob.constants.BotButtonEnum;
+import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.model.Contact;
 import telegram.teamjob.model.Shelter;
 import telegram.teamjob.repositories.ContactRepository;
 import telegram.teamjob.repositories.ShelterRepository;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -39,21 +43,29 @@ public class AnimalShelterBotService implements UpdatesListener {
     private final TelegramBot telegramBot;
     private final ShelterRepository shelterRepository;
     private final ContactRepository contactRepository;
+    private final UserService userService;
+    private final RecordService recordService;
+    private final PetPhotoService petPhotoService;
 
     /**
      * константа для шаблона контакта
+     *
      * @see Contact
      */
     static private final String CONTACT_TEXT_PATTERN = "([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)";
+
+    static private boolean flag;
     static private final Pattern pattern = Pattern.compile(CONTACT_TEXT_PATTERN);
     private final Logger logger = LoggerFactory.getLogger(AnimalShelterBotService.class);
     static private String exampleContact = "89061877772 Иванов Иван Иванович";
 
-    public AnimalShelterBotService(TelegramBot telegramBot, ShelterRepository shelterRepository, ContactRepository contactRepository) {
+    public AnimalShelterBotService(TelegramBot telegramBot, ShelterRepository shelterRepository, ContactRepository contactRepository, UserService userService, RecordService recordService, PetPhotoService petPhotoService) {
         this.telegramBot = telegramBot;
         this.shelterRepository = shelterRepository;
         this.contactRepository = contactRepository;
-
+        this.userService = userService;
+        this.recordService = recordService;
+        this.petPhotoService = petPhotoService;
     }
 
     @PostConstruct
@@ -63,12 +75,13 @@ public class AnimalShelterBotService implements UpdatesListener {
 
     /**
      * метод обрабатывает сообщения/ответы приходящие от пользователя: <br>
-     * <b>/start</b> - вызывает метод {@link #checkAnswer(Update)} предоставляющий пользователю основное меню <br>
+     * <b>/start</b> - вызывает метод {@link #sendAnswer(Update)} предоставляющий пользователю основное меню <br>
      * и с его помощью происходит сохранение контакта в базе данных {@link #safeContact(Update)}<br>
-     *<b>ответ от пользователя(пользователь нажал одну из кнопок основного меню)</b>
+     * <b>ответ от пользователя(пользователь нажал одну из кнопок основного меню)</b>
      * вызывает метод {@link #checkButtonAnswer(Update)} <br>
      * который предоставляет пользователю выбранное "подменю"<br>
      * далее метод обрабатывает выбранные пользователем команды "подменю", делая запросы в БД <br>
+     *
      * @param updates
      * @return
      */
@@ -76,94 +89,132 @@ public class AnimalShelterBotService implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
-            if (update.callbackQuery() == null) {
-                logger.info("Processing update: {}", update);
-                checkAnswer(update);
-            }
-            else if(update.callbackQuery()!=null) {
-                logger.info("CallBackQuery processing");
-                checkButtonAnswer(update);
-                {
-                    if (update.callbackQuery().data().equals("info") ||
-                            update.callbackQuery().data().equals("way") ||
-                            update.callbackQuery().data().equals("address") ||
-                            update.callbackQuery().data().equals("safety") ||
-                            update.callbackQuery().data().equals("volunteer") ||
-                            update.callbackQuery().data().equals("workTime")||
-                            update.callbackQuery().data().equals("contact") ) {
-                        sendAnswer(update);
-                    } else if
-                        (update.callbackQuery().data().equals("rules") ||
-                            update.callbackQuery().data().equals("transportation)") ||
-                            update.callbackQuery().data().equals("arrangementPuppy") ||
-                            update.callbackQuery().data().equals("arrangementDog") ||
-                            update.callbackQuery().data().equals("arrangementDogInvalid")||
-                            update.callbackQuery().data().equals("cynologist") ||
-                            update.callbackQuery().data().equals("reject") ||
-                            update.callbackQuery().data().equals("contact") ||
-                            update.callbackQuery().data().equals("help") )
-                        sendAnswer(update);
-                }
+            try {
+                messageHandler(update);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         });
 
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 
+    private void messageHandler(Update update) {
+        if (update.callbackQuery() != null) {
+            logger.info("CallBackQuery processing");
+            checkButtonAnswer(update);
+
+            if (checkCallBackQuery(update)) {
+                sendAnswer(update);
+            }
+
+        } else if (update.message().photo() != null) {
+            logger.info("Photo Upload processing");
+            long recordId = recordService.findRecordId(update);
+            PhotoSize[] photos = update.message().photo();
+            try {
+                petPhotoService.uploadPhoto(recordId, photos);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    // Кнопки меню -> Нужен рефактор
+    private boolean checkCallBackQuery(Update update) {
+        if (update.callbackQuery().data().equals("info") ||
+                update.callbackQuery().data().equals("way") ||
+                update.callbackQuery().data().equals("address") ||
+                update.callbackQuery().data().equals("safety") ||
+                update.callbackQuery().data().equals("volunteer") ||
+                update.callbackQuery().data().equals("workTime") ||
+                update.callbackQuery().data().equals("contact") ||
+                update.callbackQuery().data().equals("rules") ||
+                update.callbackQuery().data().equals("transportation)") ||
+                update.callbackQuery().data().equals("arrangementPuppy") ||
+                update.callbackQuery().data().equals("arrangementDog") ||
+                update.callbackQuery().data().equals("arrangementDogInvalid") ||
+                update.callbackQuery().data().equals("cynologist") ||
+                update.callbackQuery().data().equals("reject") ||
+                update.callbackQuery().data().equals("contact") ||
+                update.callbackQuery().data().equals("help")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private SendMessage sendMessage(long chatId, String textToSend) {
+        return new SendMessage(chatId, textToSend);
+    }
+
     /**
      * метод возвращает пользователю приветствие и ссылку на основное меню в виде таблицы <br>
+     *
      * @param update
      */
 
     private void sendGreetingMessage(Update update) {
-        String greetingMessage = "Здравствуй @" + update.message().chat().username() + "!\n" +
-                "Рады приветствовать Вас в нашем Приюте для Животных\n" +
-                "Данный бот поможет вам, если вы задумываетесь о том, чтобы забрать собаку или кошку домой\n" +
-                "Выберите пункт меню, который вас интересует";
-        telegramBot.execute(new SendMessage(update.message().chat().id(), greetingMessage)
+        String greetingMessage = BotMessageEnum.START_MESSAGE.getMessage();
+        telegramBot.execute(sendMessage(update.message().chat().id(), greetingMessage)
                 .replyMarkup(ourMenuButtons()));
         logger.info("Message Sent" + " Method - sendGreeting");
     }
+
     /**
      * метод обрабатывает сообщение, пришедшее от пользователя: если была введена команда /start  <br>
      * вызывается метод {@link #sendGreetingMessage(Update)} , иначе будет вызван- метод {@link #safeContact(Update)} <br>
+     *
      * @param update
      */
-    private void checkAnswer(Update update) {
-        switch (update.message().text()) {
-            case "/start":
-                sendGreetingMessage(update);
-                logger.info("checkAnswer: case /start");
-                break;
-            default:
-                // telegramBot.execute(new SendMessage(update.message().chat().id(),
-                //        "Вы можете обратиться к волонтеру @LnBgrn"));
-                safeContact(update);
-        }
-    }
+//    private void checkAnswer(Update update) {
+//        switch (update.message().text()) {
+//            case "/start":
+//                sendGreetingMessage(update);
+//                logger.info("checkAnswer: case /start");
+//                break;
+//            default:
+//                // telegramBot.execute(new SendMessage(update.message().chat().id(),
+//                //        "Вы можете обратиться к волонтеру @LnBgrn"));
+//                safeContact(update);
+//        }
+//    }
+
     /**
      * метод предоставляет пользователю возможность перейти в другие "подменю" (которые будут тоже  в виде таблицы),<br>
      * для этого пользователю необходимо нажать на соотвествующий раздел основного меню  <br>
      * или пользователь может вызвать волонтера <br>
+     *
      * @param update
      */
     private void checkButtonAnswer(Update update) {
         String callBackData = update.callbackQuery().data();
         logger.info(callBackData);
-        int messageId = update.callbackQuery().message().messageId();
+        long messageId = update.callbackQuery().message().messageId();
         long chatId = update.callbackQuery().message().chat().id();
         switch (callBackData) {
-            case "TEXT1_BUTTON":
-                String newMessage = "Вы выбрали раздел " + "\n" + "\"Узнать информацию о приюте\". " + "\n"
-                        + "Ознакомьтесь пожалуйста " +
-                        "с меню и выберите интересующий вас пункт";
-                telegramBot.execute(new SendMessage(chatId, newMessage)
-                        .replyMarkup(makeButtonsForMenu()));
+            case "Узнать информацию о приюте":
+                // Заглушка. Необходимо поменять на вызов метода получения информации (Этап1 п2)
+                String newMessage = "Кнопка 1 работает";
+                EditMessageText messageText = new EditMessageText(chatId, (int) messageId, newMessage);
+                telegramBot.execute(messageText);
                 break;
-
-            case "TEXT4_BUTTON":
+            case "Как взять собаку из приюта":
+                // Необходимо заменить на вывод инструкции
+                String newMessage2 = "Кнопка 2 работает";
+                EditMessageText messageText2 = new EditMessageText(chatId, (int) messageId, newMessage2);
+                telegramBot.execute(messageText2);
+                break;
+            case "Прислать отчет о питомце":
+                //Отчет по питомцу
+                String messageForRecords = BotMessageEnum.DAILY_RECORD_INFO.getMessage();
+                EditMessageText messageText3 = new EditMessageText(chatId, (int) messageId, messageForRecords);
+                telegramBot.execute(messageText3);
+                flag = true;
+                break;
+            case "Позвать волонтера":
                 //Обращение к волонтеру
-                String newMessage4 = "Вы можете обратиться к волонтеру @LnBgrn";
+                String newMessage4 = BotMessageEnum.ASK_HELP.getMessage();
                 EditMessageText messageText4 = new EditMessageText(chatId, (int) messageId, newMessage4);
                 telegramBot.execute(messageText4);
                 break;
@@ -245,25 +296,24 @@ public class AnimalShelterBotService implements UpdatesListener {
                  */
         }
     }
+
     /**
      * кнопки основго меню "Определение запроса"
+     * Метод добавляет под сообщение кнопки с меню.
+     * Клиент может выбрать интересующий его пункт и получить информацию
      */
     private InlineKeyboardMarkup ourMenuButtons() {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        String info = "Узнать информацию о приюте";
-        String instruction = "Как взять собаку из приюта";
-        String record = "Прислать отчет о питомце";
-        String help = "Позвать волонтера";
 
-        var button1Info = new InlineKeyboardButton(info);
-        var button2Instruction = new InlineKeyboardButton(instruction);
-        var button3Record = new InlineKeyboardButton(record);
-        var button4Help = new InlineKeyboardButton(help);
+        var button1Info = new InlineKeyboardButton(BotButtonEnum.BUTTON_INFO.getMessage());
+        var button2Instruction = new InlineKeyboardButton(BotButtonEnum.BUTTON_INSTRUCTION.getMessage());
+        var button3Record = new InlineKeyboardButton(BotButtonEnum.BUTTON_RECORD.getMessage());
+        var button4Help = new InlineKeyboardButton(BotButtonEnum.BUTTON_HELP.getMessage());
 
-        button1Info.callbackData("TEXT1_BUTTON");
-        button2Instruction.callbackData("TEXT2_BUTTON");
-        button3Record.callbackData("TEXT3_BUTTON");
-        button4Help.callbackData("TEXT4_BUTTON");
+        button1Info.callbackData(BotButtonEnum.BUTTON_INFO.getMessage());
+        button2Instruction.callbackData(BotButtonEnum.BUTTON_INSTRUCTION.getMessage());
+        button3Record.callbackData(BotButtonEnum.BUTTON_RECORD.getMessage());
+        button4Help.callbackData(BotButtonEnum.BUTTON_HELP.getMessage());
 
         /* Данные кнопки будут располагаться друг под другом. Можно использоваться в линию
            для этого необходимые кнопки можно перечислить в параметрах markup.addRow(b1, b2, b3, b4);
@@ -277,11 +327,11 @@ public class AnimalShelterBotService implements UpdatesListener {
     }
 
     /**
-     *  кнопки подменю "Консультация с новым пользователем" (Этап 1)
+     * кнопки подменю "Консультация с новым пользователем" (Этап 1)
      */
     private InlineKeyboardMarkup makeButtonsForMenu() {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        var buttonAboutShelter  = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_INFORMATION_ABOUT_SHELTER.getText());
+        var buttonAboutShelter = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_INFORMATION_ABOUT_SHELTER.getText());
         var buttonWorkTime = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_WORK_SCHEDULE_SHELTER.getText());
         var buttonAddress = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_ADDRESS_SHELTER.getText());
         var buttonWay = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_DRIVING_DIRECTIONS.getText());
@@ -363,29 +413,30 @@ public class AnimalShelterBotService implements UpdatesListener {
      * <u>раздел подменю:</u> "Консультация с новым пользователем" (Этап 1)<br>
      * метод делает запрос в БД <b>Shelter</b> через вызов {@link ShelterRepository#findAll()}<br>
      * и возвращает пользователю текстовый ответ, с информацией о:<br>
-     *  -  приюте <br>
-     *  - графике работы приюта<br>
-     *  - правилах безопаного поведения при посещении приюта<br>
-     *  - том как добраться до приюта<br>
-     *  - так же можно вызвать волонтера  - бот отправляет сообщние пользователю, что будет вызван волонтер <br>
+     * -  приюте <br>
+     * - графике работы приюта<br>
+     * - правилах безопаного поведения при посещении приюта<br>
+     * - том как добраться до приюта<br>
+     * - так же можно вызвать волонтера  - бот отправляет сообщние пользователю, что будет вызван волонтер <br>
      * -  пользователь может оставить для связи свои контактные данные<br>
      * (имя, фамилия, номер телефона) - вызов метода <br>
      * {@link #safeContact(Update)}<br>
-     * @throws  NullPointerException если запрашиваемой инормации нет в базе данных
+     *
+     * @param update
+     * @throws NullPointerException если запрашиваемой инормации нет в базе данных
      * @see Shelter
      * @see Contact
-     * @param update
      */
 
-    public void sendAnswer(Update update){
+    public void sendAnswer(Update update) {
         logger.info("вызвал метод sendAnswer");
         String answerMenu = update.callbackQuery().data();
         long chatId = update.callbackQuery().message().chat().id();
         int messageId = update.callbackQuery().message().messageId();
         logger.info("Ответ от кнопки " + answerMenu);
         List<Shelter> shelters = shelterRepository.findAll();
-        switch (answerMenu) {
-            case "info":
+        if (answerMenu != null) {
+            if (answerMenu.equals("info")) {
                 for (Shelter shelter : shelters) {
                     try {
                         String information = shelter.getInformationAboutShelter();
@@ -396,28 +447,48 @@ public class AnimalShelterBotService implements UpdatesListener {
                         logger.warn("Инфopмации в базе данных нет");
                     }
                 }
-                break;
-            case "workTime":
+            } else if (answerMenu.equals("/start")) {
+                sendGreetingMessage(update);
+            } else if (answerMenu.equals("/createuser")) {
+                telegramBot.execute(sendMessage(chatId, BotMessageEnum.CREATE_USER_INFO.getMessage()));
+            } else if (answerMenu.matches(CONTACT_TEXT_PATTERN)) {
+                // Если текст подходит по паттерн - Создаём юзера
+                logger.info("Processing checkAnswer:");
+                // Кать, здесь мой метод, видел твой внизу, посмотри что лучше подойдёт (Мой вряд ли под паттерн сойдёт)
+                userService.createUser(update);
+            } else if (answerMenu.equals("/send-recod")) {
+                //Отправляет юзеру шаблон отчета
+                String messageForRecords = BotMessageEnum.DAILY_RECORD_INFO.getMessage();
+                telegramBot.execute(sendMessage(chatId, messageForRecords));
+            } else if (flag) {
+                //При нажатии на кнопку 3 (Отправить отчет) flag = true;
+                logger.info("Processing creating record");
+                // Нужен if На случай некорректного сообщения
+                if (userService.getUser(chatId) != null) {
+                    recordService.createRecord(update);
+                } else {
+                    telegramBot.execute(sendMessage(chatId, BotMessageEnum.USER_NOT_FOUND_MESSAGE.getMessage()));
+                }
+                flag = false;
+            } else if (answerMenu.equals("workTime")) {
                 for (Shelter shelter : shelters) {
                     try {
                         String workSchedule = shelter.getWorkScheduleShelter();
-                        EditMessageText answer = new EditMessageText(chatId,messageId,workSchedule);
+                        EditMessageText answer = new EditMessageText(chatId, messageId, workSchedule);
                         logger.warn("IMPORTANT" + workSchedule);
                         telegramBot.execute(answer);
                     } catch (NullPointerException e) {
                         logger.warn("Инфopмации в базе данных нет");
                     }
                 }
-                break;
-            case "address":
+            } else if (answerMenu.equals("address")) {
                 for (Shelter shelter : shelters) {
                     String address = shelter.getAddressShelter();
-                    EditMessageText answer = new EditMessageText(chatId,messageId, address);
+                    EditMessageText answer = new EditMessageText(chatId, messageId, address);
                     logger.warn("IMPORTANT" + address);
                     telegramBot.execute(answer);
                 }
-                break;
-            case "way":
+            } else if (answerMenu.equals("way")) {
                 for (Shelter shelter : shelters) {
                     try {
                         String way = shelter.getDrivingDirectionsShelter();
@@ -428,27 +499,27 @@ public class AnimalShelterBotService implements UpdatesListener {
 
                     }
                 }
-                break;
-            case "safety":
+            } else if (answerMenu.equals("safety")) {
                 for (Shelter shelter : shelters) {
                     try {
                         String safety = shelter.getSafetyAtShelter();
-                        EditMessageText answer = new EditMessageText(chatId, messageId,safety);
+                        EditMessageText answer = new EditMessageText(chatId, messageId, safety);
                         telegramBot.execute(answer);
                     } catch (NullPointerException e) {
                         logger.warn("Инфopмации в базе данных нет");
 
                     }
                 }
-                break;
-            case "volunteer":
+            } else if (answerMenu.equals("volunteer")) {
                 telegramBot.execute(new SendMessage(chatId, "Спасибо за обращение, волонтер приюта свяжется " +
                         "с Вами"));
-                break;
-            case "contact":
-                telegramBot.execute(new SendMessage(chatId,COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION.getText()));
-                break;
-
+            } else if (answerMenu.equals("contact")) {
+                telegramBot.execute(new SendMessage(chatId, COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION.getText()));
+            } else {
+                telegramBot.execute(sendMessage(chatId, BotMessageEnum.ASK_HELP.getMessage()));
+            }
+        } else {
+            telegramBot.execute(sendMessage(chatId, BotMessageEnum.ASK_HELP.getMessage()));
         }
     }
 
@@ -458,9 +529,10 @@ public class AnimalShelterBotService implements UpdatesListener {
      * путем вызова {@link ContactRepository#save(Object)} <br>
      * если сообщение было введено пользователем не верно - бот вернет ответ, <br>
      * что данные не сохранились, так как сообщение не соответсвует шаблону <br>
+     *
      * @param update
      */
-    public void safeContact(Update update){
+    public void safeContact(Update update) {
         String text = update.message().text();
         long chatId = update.message().chat().id();
         Matcher matcher = pattern.matcher(text);
@@ -474,42 +546,45 @@ public class AnimalShelterBotService implements UpdatesListener {
             String messageForBase = "Я сохранил ваши данные в базе данных. Сотрудники приюта свяжутся с Вами.";
             telegramBot.execute(new SendMessage(chatId, messageForBase));
             logger.info("Данные сохранены в базе данных");
-        }
-
-        else {
+        } else {
             String warningMessage = "Не смогу сохранить запись. Введенное сообщение не соотствует шаблону: "
                     + exampleContact + ". Попробуйте еще раз.";
             telegramBot.execute(new SendMessage(chatId, warningMessage));
             logger.warn("Не смогу сохранить запись. Введенное сообщение не соотствует шаблону");
         }
     }
+
     /**
      * метод для выполнения {@code GET} запроса в {@code ContactController}<br>
      * найти в БД контак пользователя по его id
+     *
      * @see ContactRepository
      * @see Contact
      */
-    public Contact findContactById(int id){
+    public Contact findContactById(int id) {
         logger.warn("check the correctness of the faculty id");
         return contactRepository.findById(id).orElse(null);
     }
+
     /**
      * метод для выполнения {@code GET} запроса в {@code ContactController}<br>
      * найти все контакты имеющиеся в БД
+     *
      * @see ContactRepository
      * @see Contact
      */
-    public Collection<Contact> getAllContacts(){
+    public Collection<Contact> getAllContacts() {
         return contactRepository.findAll();
     }
 
     /**
      * метод для выполнения {@code POST} запроса в {@code ContactController}<br>
      * создание нового контакта пользователя в БД
+     *
      * @see ContactRepository
      * @see Contact
      */
-    public Contact addContact(Contact contact){
+    public Contact addContact(Contact contact) {
         return contactRepository.save(contact);
     }
 

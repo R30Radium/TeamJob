@@ -1,10 +1,10 @@
-package telegram.teamjob.Service;
+package telegram.teamjob.service;
 
 import com.pengrad.telegrambot.model.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.entity.User;
+import telegram.teamjob.model.User;
 import telegram.teamjob.repository.UserRepository;
 
 @Service

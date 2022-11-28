@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import telegram.teamjob.Service.TelegramBotUpdatesListener;
+import telegram.teamjob.service.AnimalShelterBotService;
 import telegram.teamjob.constants.BotMessageEnum;
-import telegram.teamjob.entity.User;
+import telegram.teamjob.model.User;
 import telegram.teamjob.repository.UserRepository;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class BaseIntegrationTest {
     private final Update createRecordAnswer = BotUtils.parseUpdate(getFileContent("classpath:updates/update_3.json"));
     private final Update userCreationUpdate = BotUtils.parseUpdate(getFileContent("classpath:updates/update_create_user.json"));
     @Autowired
-    private TelegramBotUpdatesListener telegramBotUpdatesListener;
+    private AnimalShelterBotService animalShelterBotService;
     @Autowired
     private UserRepository userRepository;
 
@@ -45,7 +45,7 @@ public class BaseIntegrationTest {
 
     @Test
     public void testHelloMessage() {
-        telegramBotUpdatesListener.process(List.of(helloUpdate));
+        animalShelterBotService.process(List.of(helloUpdate));
 
         ArgumentCaptor<SendMessage> sentMessage = ArgumentCaptor.forClass(SendMessage.class);
         verify(telegramBot).execute(sentMessage.capture());
@@ -57,7 +57,7 @@ public class BaseIntegrationTest {
 
     @Test
     public void testUserCreatMessage() {
-        telegramBotUpdatesListener.process(List.of(userCreationAnswer));
+        animalShelterBotService.process(List.of(userCreationAnswer));
         ArgumentCaptor<SendMessage> sentMessage = ArgumentCaptor.forClass(SendMessage.class);
         verify(telegramBot).execute(sentMessage.capture());
 
@@ -68,7 +68,7 @@ public class BaseIntegrationTest {
     }
     @Test
     public void testSendRecordMessage() {
-        telegramBotUpdatesListener.process(List.of(createRecordAnswer));
+        animalShelterBotService.process(List.of(createRecordAnswer));
         ArgumentCaptor<SendMessage> sentMessage = ArgumentCaptor.forClass(SendMessage.class);
         verify(telegramBot).execute(sentMessage.capture());
 
@@ -84,7 +84,7 @@ public class BaseIntegrationTest {
         String phone = splittedMessage[1];
         String pet = splittedMessage[2];
 
-        telegramBotUpdatesListener.process(List.of(userCreationUpdate));
+        animalShelterBotService.process(List.of(userCreationUpdate));
 
         User createdUser = userRepository.findByChatId(userCreationUpdate.message().chat().id());
         assertEquals(username, createdUser.getUserName());

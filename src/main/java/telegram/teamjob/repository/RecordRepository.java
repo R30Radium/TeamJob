@@ -1,10 +1,9 @@
 package telegram.teamjob.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import telegram.teamjob.entity.Record;
+import telegram.teamjob.model.Record;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public interface RecordRepository extends JpaRepository<Record, Long> {
 
