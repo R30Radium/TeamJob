@@ -47,5 +47,4 @@ public class UserService {
         return userRepository.findByChatId(chatId);
     }
 
-
 }

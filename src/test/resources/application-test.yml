@@ -1,0 +1,6 @@
+spring:
+  - datasource:
+  - url: jdbc:tc:postgresql:13.3:///tgBot1
+jpa:
+  jpa.show-sql: true
+  properties.hibernate.format_sql: true

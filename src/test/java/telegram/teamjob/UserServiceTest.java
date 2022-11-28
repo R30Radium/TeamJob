@@ -28,8 +28,10 @@ public class UserServiceTest {
 
         // WHen часть (Действия)
         userServiceTest.createUser(updateTest);
+        userServiceTest.getUser(chatTest.id());
         // Then что то произошло и проверяем
 
-        Mockito.verify(userRepositoryTest).save(Mockito.any());
+        Mockito.verify(userRepositoryTest).save(userServiceTest.createUser(updateTest));
+
     }
 }
