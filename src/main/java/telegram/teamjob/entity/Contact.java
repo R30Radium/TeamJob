@@ -1,5 +1,4 @@
-package telegram.teamjob.model;
-
+package telegram.teamjob.entity;
 
 import telegram.teamjob.repositories.ContactRepository;
 
@@ -22,10 +21,14 @@ public class Contact {
     private int id;
     private String name;
     private String numberPhone;
-    // private String timeForCalling;
+
 
     public Contact(){}
-
+    public Contact(int id, String numberPhone, String name){
+        this.id=id;
+        this.numberPhone = numberPhone;
+        this.name = name;
+    }
     public int getId(){
         return id;
     }
@@ -47,10 +50,9 @@ public class Contact {
         this.numberPhone = numberPhone;
     }
 
-
     @Override
     public String toString() {
-        return "Contact: " + "id " + id+ "name " + name + "number phone " + numberPhone;
+        return "Contact: " + " id " + id+ " name " + name + " number phone " + numberPhone;
     }
 
     @Override
@@ -67,4 +69,3 @@ public class Contact {
         return Objects.hash(id, name, numberPhone);
     }
 }
-

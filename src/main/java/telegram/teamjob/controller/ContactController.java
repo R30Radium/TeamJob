@@ -11,21 +11,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import telegram.teamjob.model.Contact;
-import telegram.teamjob.service.AnimalShelterBotService;
-import java.util.Collection;
+import telegram.teamjob.entity.Contact;
+import telegram.teamjob.service.TelegramBotUpdatesListener;
+
+import java.util.List;
+import java.util.Optional;
 
 
 @RestController
 @RequestMapping("/contact")
 public class ContactController {
 
-    private final AnimalShelterBotService animalShelterBotService;
+    private final TelegramBotUpdatesListener telegramBotUpdatesListener;
 
-    private final Logger logger = LoggerFactory.getLogger(AnimalShelterBotService.class);
+    private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
-    public ContactController(AnimalShelterBotService animalShelterBotService){
-        this.animalShelterBotService = animalShelterBotService;
+    public ContactController(TelegramBotUpdatesListener telegramBotUpdatesListener){
+        this.telegramBotUpdatesListener = telegramBotUpdatesListener;
     }
     @Operation(summary = "Поиск контакта по id",
             responses = {
@@ -38,10 +40,10 @@ public class ContactController {
                             ))}, tags = "Contact" )
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contact> getContact(@Parameter(description = "id контакта, для корректного поиска нужно указать верный id", required = true, example = "1")
-                                              @PathVariable int id){
-        Contact contact = animalShelterBotService.findContactById(id);
-        if(contact == null ){
+    public ResponseEntity<Optional<Contact>> getContact(@Parameter(description = "id контакта, для корректного поиска нужно указать верный id", required = true, example = "1")
+                                                        @PathVariable int id){
+        Optional <Contact> contact = telegramBotUpdatesListener.findContactById(id);
+        if(contact .isEmpty() ){
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(contact);
@@ -56,8 +58,8 @@ public class ContactController {
                                     array=@ArraySchema(schema = @Schema(implementation = Contact.class))
                             ))}, tags = "Contact")
     @GetMapping
-    public ResponseEntity<Collection<Contact>> findAllContacts(){
-        Collection<Contact> contacts = animalShelterBotService.getAllContacts();
+    public ResponseEntity<List<Contact>> findAllContacts(){
+        List<Contact> contacts = telegramBotUpdatesListener.getAllContacts();
         if(contacts == null ){
             logger.warn("В базе данных нет контактов");
             return ResponseEntity.notFound().build();
@@ -77,7 +79,8 @@ public class ContactController {
 
     @PostMapping("/newContact")
     public Contact addContact(@RequestBody Contact contact){
-        return animalShelterBotService.addContact(contact);
+        return telegramBotUpdatesListener.addContact(contact);
     }
 }
+
 

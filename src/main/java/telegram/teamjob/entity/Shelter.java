@@ -1,4 +1,4 @@
-package telegram.teamjob.model;
+package telegram.teamjob.entity;
 
 import telegram.teamjob.repositories.ShelterRepository;
 

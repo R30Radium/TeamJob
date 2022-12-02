@@ -1,4 +1,4 @@
-package telegram.teamjob.model;
+package telegram.teamjob.constants;
 
 
 
@@ -6,7 +6,7 @@ package telegram.teamjob.model;
 /**
  * @author shulga_ea <br>
  * Enum - перечисление пунктов меню для получени информции о приюте, записи контакта пользователя, вызова волонтера<br>
- * @see pro.sky.java.course6.animal_shelter_bot.service.AnimalShelterBotService
+ * @see telegram.teamjob.service.TelegramBotUpdatesListener
  *
  */
 public enum ServiceConstantsMenu {
