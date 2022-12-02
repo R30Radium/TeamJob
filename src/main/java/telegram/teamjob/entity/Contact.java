@@ -22,7 +22,6 @@ public class Contact {
     private String name;
     private String numberPhone;
 
-
     public Contact(){}
     public Contact(int id, String numberPhone, String name){
         this.id=id;

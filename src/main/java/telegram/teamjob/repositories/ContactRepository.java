@@ -8,7 +8,6 @@ import  telegram.teamjob.entity.Contact;
 import java.util.List;
 import java.util.Optional;
 
-
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
 
