@@ -1,0 +1,12 @@
+{
+  "message":{
+    "text": "/start",
+    "from": {
+      "id": 123,
+      "is_bot": false
+    },
+    "chat":{
+      "id": 1300060749
+    }
+  }
+}

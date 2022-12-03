@@ -1,7 +1,9 @@
 package telegram.teamjob.serviceTest;
 
 
+import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Assertions;
@@ -17,8 +19,14 @@ import telegram.teamjob.repositories.ContactRepository;
 import telegram.teamjob.repositories.ShelterRepository;
 import telegram.teamjob.service.TelegramBotUpdatesListener;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+
+import static org.mockito.Mockito.verify;
+import io.restassured.RestAssured;
+import static io.restassured.RestAssured.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -78,6 +86,52 @@ public class ServiceMethodsForControllerTest {
         Mockito.when(contactRepository.findAll()).thenReturn(allContacts);
         Assertions.assertEquals(allContacts, telegramBotUpdatesListener.getAllContacts());
     }
+
+    @Test
+    public void verifyTests() throws Exception {
+        String json = Files.readString(Paths.get("update.json"));
+        Update update = BotUtils.parseUpdate(json);
+        TelegramBotUpdatesListener telegramBotUpdatesListener1 = Mockito.mock(TelegramBotUpdatesListener.class);
+        telegramBotUpdatesListener1.safeContact(update);
+        telegramBotUpdatesListener1.sendResponseForFirstAndSecondMenu(update);
+        telegramBotUpdatesListener1.checkButtonAnswer(update);
+        telegramBotUpdatesListener1.sendGreetingMessage(update);
+        telegramBotUpdatesListener1.checkAnswer(update);
+        telegramBotUpdatesListener1.process(List.of(update));
+
+
+        verify(telegramBotUpdatesListener1).safeContact(update);
+        verify(telegramBotUpdatesListener1).sendResponseForFirstAndSecondMenu(update);
+        verify(telegramBotUpdatesListener1).checkButtonAnswer(update);
+        verify(telegramBotUpdatesListener1).sendGreetingMessage(update);
+        verify(telegramBotUpdatesListener1).checkAnswer(update);
+        verify(telegramBotUpdatesListener1).process(List.of(update));
+
+
+        ContactRepository contactRepository1 = Mockito.mock(ContactRepository.class);
+        contactRepository1.findContactByNumberPhoneAndName("89061877772", "Иванов Иван Иванович");
+        verify(contactRepository1).findContactByNumberPhoneAndName("89061877772", "Иванов Иван Иванович");
+        contactRepository1.findById(1);
+        verify(contactRepository1).findById(1);
+
+    }
+    @Test
+    void negativeSendMessage() {
+        RestAssured.baseURI = "https://api.telegram.org/5758859832:AAEwJ4cIzXZnXITbJ1CnX1sy1K7WmXW-uhc";
+        given()
+                .param("text", "rest-assured_TEST")
+                .param("chat_id", "362396673")
+                .when()
+                .get("/start")
+                .then()
+                .statusCode(404);
+    }
+    @Test
+    public void whenRequestGet_thenOK(){
+        when().request("GET", "/contact/20").then().statusCode(200);
+    }
+
+
 
 
 }
