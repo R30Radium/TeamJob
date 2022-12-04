@@ -1,4 +1,4 @@
-package telegram.teamjob.serviceTest;
+package telegram.teamjob.service;
 
 
 import com.pengrad.telegrambot.model.Chat;
@@ -6,7 +6,6 @@ import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import telegram.teamjob.service.UserServiceImpl;
 import telegram.teamjob.entity.User;
 import telegram.teamjob.repositories.UserRepository;
 

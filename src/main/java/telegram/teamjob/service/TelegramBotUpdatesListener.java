@@ -1,4 +1,4 @@
-package telegram.teamjob.service;
+package telegram.teamjob.service; // поменял название пакета, чтобы работало покрытие
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
@@ -62,7 +62,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     static private final Pattern pattern = Pattern.compile(CONTACT_TEXT_PATTERN);
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
     static private String exampleContact = "89061877772 Иванов Иван Иванович";
-    private boolean flag;
+    private boolean flag; // todo: это не будет работать. У вас этот бин - синглтон, это значит, что он один хранит всё состояние и обрабатывает запросы от всех пользователей.
+    // todo: Теперь представьте, вы запомнили флаг, а потом другой пользователь в этом время обращается к боту и работает уже с этим флагом. У вас один флаг - общий для всех пользователей, а должен быть для каждого свой.
+    // todo: Такие состояния нужно хранить в БД для каждого пользователя.
 
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot, ShelterRepository shelterRepository,
@@ -82,7 +84,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @PostConstruct
     public void init() throws IOException {
         String json = Files.readString(Paths.get("update.json"));
-        Update update = BotUtils.parseUpdate(json);
+        Update update = BotUtils.parseUpdate(json); // todo: зачем эта строка? лишняя
         telegramBot.setUpdatesListener(this);
     }
 
@@ -109,7 +111,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             logger.info("CallBackQuery processing");
             checkButtonAnswer(update);
             if (update.callbackQuery().data().equals("info") || //команды для меню первого этапа
-                    update.callbackQuery().data().equals("way") ||
+                    update.callbackQuery().data().equals("way") || // todo: все строки лучше вынести в константы
                     update.callbackQuery().data().equals("address") ||
                     update.callbackQuery().data().equals("safety") ||
                     update.callbackQuery().data().equals("volunteer") ||
@@ -148,7 +150,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         Long chatId = update.message().chat().id();
         String inputText = update.message().text();
         if (inputText != null) {
-            if (inputText.equals("/start")) {
+            if (inputText.equals("/start")) {  // todo: все строки лучше вынести в константы
                 sendGreetingMessage(update);
             } else if (inputText.equals("/createuser")) {
                 telegramBot.execute(sendMessage(chatId, BotMessageEnum.CREATE_USER_INFO.getMessage()));
@@ -214,7 +216,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         int messageId = update.callbackQuery().message().messageId();
         long chatId = update.callbackQuery().message().chat().id();
         switch (callBackData) {
-            case "Узнать информацию о приюте":
+            case "Узнать информацию о приюте":  // todo: все строки лучше вынести в константы
                 //вызов  меню этапа 1
                 String newMessage = "Вы выбрали раздел " + "\n" + "\"Узнать информацию о приюте\". " + "\n"
                         + "Ознакомьтесь пожалуйста " +
@@ -265,7 +267,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         List<Shelter> shelters = shelterRepository.findAll();
         List<InformationForOwner> info = informationForOwnerRepository.findAll();
         switch (answerMenu) {
-            case "info":
+            case "info":  // todo: все строки лучше вынести в константы
                 for (Shelter shelter : shelters) {
                     try {
                         String information = shelter.getInformationAboutShelter();

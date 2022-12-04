@@ -1,4 +1,4 @@
-package telegram.teamjob.serviceTest;
+package telegram.teamjob.service;
 
 
 

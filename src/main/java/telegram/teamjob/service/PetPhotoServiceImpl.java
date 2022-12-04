@@ -44,7 +44,9 @@ public class PetPhotoServiceImpl implements PetPhotoService {
         System.out.println(fileId);
         System.out.println(fileName);
 
-        String botToken = "5607238907:AAGr_a_h_GqQKemI2z_JSKPxsSfwiqbvemM";
+        String botToken = "5607238907:AAGr_a_h_GqQKemI2z_JSKPxsSfwiqbvemM"; // todo: Токен не надо вшивать в коде
+        // todo: во-первых, токен вообще не нужно отправлять в публичный репозиторий - нужно при запуске приложения передавать его как передавали профиль в домашке
+        // todo: во-вторых, не надо его хардкодить - надо использовать инъекцию значений через Value аннотацию
         URL url = new URL("https://api.telegram.org/bot" + botToken + "/" + "getFile?file_id=" + fileId);
         BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
         String getFileResponse = br.readLine();

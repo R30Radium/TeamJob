@@ -1,11 +1,23 @@
-package telegram.teamjob.serviceTest;
+package telegram.teamjob.service;
 
+
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
+import io.restassured.RestAssured;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,18 +27,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import telegram.teamjob.configuration.TelegramBotConfiguration;
 import telegram.teamjob.entity.Contact;
+import telegram.teamjob.entity.InformationForOwner;
 import telegram.teamjob.repositories.ContactRepository;
+import telegram.teamjob.repositories.InformationForOwnerRepository;
 import telegram.teamjob.repositories.ShelterRepository;
-import telegram.teamjob.service.TelegramBotUpdatesListener;
-
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.Optional;
-
-import static org.mockito.Mockito.verify;
-import io.restassured.RestAssured;
-import static io.restassured.RestAssured.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -85,6 +89,36 @@ public class ServiceMethodsForControllerTest {
                 new Contact(2, "89061977773", "Петров Петр Петрович"));
         Mockito.when(contactRepository.findAll()).thenReturn(allContacts);
         Assertions.assertEquals(allContacts, telegramBotUpdatesListener.getAllContacts());
+    }
+
+    /**
+     * Пример теста для метода checkButtonAnswer
+     */
+    @Test
+    public void checkButtonAnswerTest() throws IOException, URISyntaxException {
+        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
+        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
+            tgBot,
+            Mockito.mock(ShelterRepository.class),
+            Mockito.mock(ContactRepository.class),
+            Mockito.mock(InformationForOwnerRepository.class),
+            Mockito.mock(UserServiceImpl.class),
+            Mockito.mock(RecordServiceImpl.class),
+            Mockito.mock(PetPhotoServiceImpl.class)
+        );
+        telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
+
+        String info = replacedJson("Узнать информацию о приюте");
+        Update update = BotUtils.parseUpdate(info);
+        telegramBotUpdatesListener.checkButtonAnswer(update);
+        verify(tgBot).execute(new SendMessage(update.callbackQuery().message().chat().id(), "Вы выбрали раздел " + "\n" + "\"Узнать информацию о приюте\". " + "\n"
+            + "Ознакомьтесь пожалуйста " +
+            "с меню и выберите интересующий вас пункт").replyMarkup(any()));
+    }
+
+    private String replacedJson(String replacement) throws IOException, URISyntaxException {
+        String json = Files.readString(Paths.get(ServiceMethodsForControllerTest.class.getResource("update_for_checkButtonAnswer.json").toURI()));
+        return json.replace("%data%", replacement);
     }
 
     @Test

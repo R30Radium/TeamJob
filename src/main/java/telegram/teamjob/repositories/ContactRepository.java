@@ -10,13 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Integer> {
-
-    Optional<Contact> findById(int id);
-
+    // удалил  Optional<Contact> findById(int id) т.к. такой метод уже есть в репозитории и он мешал при тестировании
     List<Contact> findContactByNumberPhoneAndName(String numberPhone, String name);
-
-
-
 
 }
 
