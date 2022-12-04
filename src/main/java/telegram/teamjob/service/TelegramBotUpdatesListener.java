@@ -1,4 +1,4 @@
-package telegram.teamjob.service; // поменял название пакета, чтобы работало покрытие
+package telegram.teamjob.service;
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
