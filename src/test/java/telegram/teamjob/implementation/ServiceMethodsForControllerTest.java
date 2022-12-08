@@ -1,4 +1,4 @@
-package telegram.teamjob.serviceTest;
+package telegram.teamjob.implementation;
 
 
 import com.pengrad.telegrambot.BotUtils;
@@ -14,19 +14,19 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import telegram.teamjob.configuration.TelegramBotConfiguration;
+import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.entity.Contact;
-import telegram.teamjob.repositories.ContactRepository;
-import telegram.teamjob.repositories.ShelterRepository;
-import telegram.teamjob.service.TelegramBotUpdatesListener;
+import telegram.teamjob.repositories.*;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.verify;
 import io.restassured.RestAssured;
 import static io.restassured.RestAssured.*;
+import static org.mockito.Mockito.verify;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,7 +39,6 @@ public class ServiceMethodsForControllerTest {
 
     @Mock
     private TelegramBotConfiguration configuration;
-
     @Mock
     private SendMessage message;
     @Mock
@@ -51,7 +50,11 @@ public class ServiceMethodsForControllerTest {
     @InjectMocks
     private TelegramBotUpdatesListener telegramBotUpdatesListener;
 
-    public ServiceMethodsForControllerTest(){};
+    public ServiceMethodsForControllerTest() {
+    }
+
+    ;
+
     @Test
     public void addContact() {
         Mockito.when(contactRepository.save(new Contact(1, "89061877772", "Иванов Иван Иванович"))).thenReturn(new Contact(1, "89061877772", "Иванов Иван Иванович"));
@@ -70,8 +73,16 @@ public class ServiceMethodsForControllerTest {
 
     @Test
     public void findContactByIdNegative() {
-        Mockito.when(contactRepository.findById(10)).thenReturn(null);
-        Assertions.assertNull(telegramBotUpdatesListener.findContactById(10));
+        TelegramBotUpdatesListener telegramBotUpdatesListener = Mockito.mock(TelegramBotUpdatesListener.class);
+        Mockito.when(telegramBotUpdatesListener.findContactById(5)).thenReturn(Optional.of(new Contact(5, "89061877772", "Иванов Иван Иванович")));
+        Assertions.assertEquals(Optional.of(new Contact(5, "89061877772", "Иванов Иван Иванович")), telegramBotUpdatesListener.findContactById(5));
+
+        ContactRepository contactRepository1 = Mockito.mock(ContactRepository.class);
+        Mockito.when(contactRepository1.findContactByNumberPhoneAndName("89061877772", "Иванов Иван Иванович")).
+                thenReturn((List.of(new Contact(5, "89061877772", "Иванов Иван Иванович"))));
+        Assertions.assertEquals(List.of(new Contact(5, "89061877772", "Иванов Иван Иванович")),
+                contactRepository1.findContactByNumberPhoneAndName("89061877772", "Иванов Иван Иванович"));
+
     }
 
     @Test
@@ -86,6 +97,16 @@ public class ServiceMethodsForControllerTest {
         Mockito.when(contactRepository.findAll()).thenReturn(allContacts);
         Assertions.assertEquals(allContacts, telegramBotUpdatesListener.getAllContacts());
     }
+
+
+    @Test
+    public void process() throws IOException {
+        String json = Files.readString(Paths.get("update.json"));
+        Update update = BotUtils.parseUpdate(json);
+        String token = "5758859832:AAEwJ4cIzXZnXITbJ1CnX1sy1K7WmXW-uhc";
+        Contact contact = new Contact(1, "89061877772", "Иванов Иван Иванович");
+    }
+
 
     @Test
     public void verifyTests() throws Exception {
@@ -115,6 +136,18 @@ public class ServiceMethodsForControllerTest {
         verify(contactRepository1).findById(1);
 
     }
+
+    @Test
+    public void process2() throws IOException {
+        String json = Files.readString(Paths.get("update_4_contact.json"));
+        Update update = BotUtils.parseUpdate(json);
+        telegramBotUpdatesListener.safeContact(update);
+        long chatId = update.message().chat().id();
+        verify(telegramBot).execute(new SendMessage(chatId, BotMessageEnum.SAVE_INFORMATION.getMessage()));
+
+    }
+
+
     @Test
     void negativeSendMessage() {
         RestAssured.baseURI = "https://api.telegram.org/5758859832:AAEwJ4cIzXZnXITbJ1CnX1sy1K7WmXW-uhc";
@@ -126,15 +159,4 @@ public class ServiceMethodsForControllerTest {
                 .then()
                 .statusCode(404);
     }
-    @Test
-    public void whenRequestGet_thenOK(){
-        when().request("GET", "/contact/20").then().statusCode(200);
-    }
-
-
-
-
 }
-
-
-

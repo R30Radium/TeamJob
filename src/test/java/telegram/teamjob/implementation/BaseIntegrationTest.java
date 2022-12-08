@@ -1,4 +1,4 @@
-package telegram.teamjob.serviceTest;
+package telegram.teamjob.implementation;
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import telegram.teamjob.service.TelegramBotUpdatesListener;
 import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.entity.User;
 import telegram.teamjob.repositories.UserRepository;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static telegram.teamjob.serviceTest.TestUtils.*;
+import static telegram.teamjob.implementation.TestUtils.*;
 
 
 
