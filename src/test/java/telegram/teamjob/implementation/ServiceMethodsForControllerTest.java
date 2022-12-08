@@ -13,10 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import telegram.teamjob.configuration.TelegramBotConfiguration;
+import telegram.teamjob.Configuration.TelegramBotConfiguration;
 import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.entity.Contact;
 import telegram.teamjob.repositories.*;
+import telegram.teamjob.Service.*;
 
 import java.io.IOException;
 import java.nio.file.Files;

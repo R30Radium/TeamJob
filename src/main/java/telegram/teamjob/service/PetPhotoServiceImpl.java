@@ -1,4 +1,4 @@
-package telegram.teamjob.service;
+package telegram.teamjob.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import telegram.teamjob.entity.Contact;
-import telegram.teamjob.service.TelegramBotUpdatesListener;
+import telegram.teamjob.Service.TelegramBotUpdatesListener;
 
 import java.util.List;
 import java.util.Optional;

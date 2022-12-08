@@ -14,6 +14,7 @@ import org.springframework.test.context.ActiveProfiles;
 import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.entity.User;
 import telegram.teamjob.repositories.UserRepository;
+import telegram.teamjob.Service.*;
 
 import java.util.List;
 

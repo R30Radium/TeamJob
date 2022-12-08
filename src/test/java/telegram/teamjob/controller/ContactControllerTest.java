@@ -15,10 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import telegram.teamjob.entity.Contact;
 import telegram.teamjob.repositories.*;
-import telegram.teamjob.implementation.PetPhotoServiceImpl;
-import telegram.teamjob.implementation.RecordServiceImpl;
-import telegram.teamjob.implementation.TelegramBotUpdatesListener;
-import telegram.teamjob.implementation.UserServiceImpl;
+import telegram.teamjob.implementation.*;
+import telegram.teamjob.Service.*;
 
 
 import java.util.*;
@@ -49,8 +47,6 @@ public class ContactControllerTest {
     private  RecordServiceImpl recordService;
     @MockBean
     private  PetPhotoServiceImpl petPhotoService;
-    @MockBean
-    private ReportRepository reportRepository;
     @MockBean
     private PetPhotoRepository petPhotoRepository;
     @MockBean
