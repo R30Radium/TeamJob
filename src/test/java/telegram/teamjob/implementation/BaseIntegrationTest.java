@@ -73,7 +73,7 @@ public class BaseIntegrationTest {
         verify(telegramBot).execute(sentMessage.capture());
 
         assertEquals(createRecordAnswer.message().chat().id(), sentMessage.getValue().getParameters().get("chat_id"));
-        assertEquals(BotMessageEnum.DAILY_RECORD_INFO.getMessage()
+        assertEquals(BotMessageEnum.START_MESSAGE.getMessage()
                 , sentMessage.getValue().getParameters().get("text"));
     }
 

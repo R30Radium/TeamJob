@@ -23,7 +23,8 @@ CREATE TABLE contact
 (
     id serial PRIMARY KEY,
     name TEXT,
-    number_phone TEXT
+    number_phone TEXT,
+    date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL
 
 );
 
@@ -57,20 +58,28 @@ CREATE TABLE users
 CREATE TABLE records
 (
     record_id    BIGSERIAL NOT NULL PRIMARY KEY,
-    user_id     BIGSERIAL,
-    FOREIGN KEY (user_id) REFERENCES users (user_id),
     chat_id BIGSERIAL NOT NULL,
     date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    life_record TEXT      NOT NULL
+    diet TEXT      NOT NULL,
+    adaptation TEXT      NOT NULL,
+    change_in_behavior TEXT      NOT NULL
 );
 
 CREATE TABLE petPhotos
 (
     pet_Photos_id BIGSERIAL NOT NULL PRIMARY KEY,
-    record_id   BIGSERIAL,
-    FOREIGN KEY (record_id) REFERENCES records (record_id),
     file_path   TEXT      NOT NULL,
     file_size   BIGINT    NOT NULL
 );
 
 CREATE SEQUENCE IF NOT EXISTS hibernate_sequence;
+
+
+
+
+
+
+
+
+
+

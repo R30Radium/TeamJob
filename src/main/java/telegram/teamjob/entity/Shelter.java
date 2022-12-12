@@ -87,4 +87,3 @@ public class Shelter {
         this.safetyAtShelter = safetyAtShelter;
     }
 }
-

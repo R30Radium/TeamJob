@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-
 @Entity
 public class InformationForOwner {
 
@@ -35,7 +34,7 @@ public class InformationForOwner {
 
     public String goodCynologists;// кинологи к которым можно обратиться
 
-    public String reject;//причины отказа (почему могут не дать собаку).
+    public String reject;//причины отказа (почему могут не дать собаку)
 
     public String getRules() {return rules;}
 
@@ -57,4 +56,3 @@ public class InformationForOwner {
     public String getReject() {return reject;}
 
 }
-

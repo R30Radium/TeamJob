@@ -14,11 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import telegram.teamjob.entity.Contact;
+import telegram.teamjob.implementation.*;
 import telegram.teamjob.repositories.*;
-import telegram.teamjob.implementation.PetPhotoServiceImpl;
-import telegram.teamjob.implementation.RecordServiceImpl;
-import telegram.teamjob.implementation.TelegramBotUpdatesListener;
-import telegram.teamjob.implementation.UserServiceImpl;
 
 
 import java.util.*;
@@ -27,7 +24,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @WebMvcTest(controllers = ContactController.class)
 @ExtendWith(MockitoExtension.class)
 public class ContactControllerTest {
@@ -35,7 +31,7 @@ public class ContactControllerTest {
     private MockMvc mockMvc;
 
     @SpyBean
-    private TelegramBotUpdatesListener telegramBotUpdatesListener;
+    private ContactServiceImpl contactServiceImpl;
 
     @MockBean
     private ContactRepository contactRepositoryTest;
@@ -46,6 +42,8 @@ public class ContactControllerTest {
     @MockBean
     private  UserServiceImpl userService;
     @MockBean
+    private  UserRepository userRepository;
+    @MockBean
     private  RecordServiceImpl recordService;
     @MockBean
     private  PetPhotoServiceImpl petPhotoService;
@@ -55,6 +53,12 @@ public class ContactControllerTest {
     private PetPhotoRepository petPhotoRepository;
     @MockBean
     private  TelegramBot telegramBot;
+    @MockBean
+    private  RecordRepository recordRepository;
+    @MockBean
+    private VolunteerRepository volunteerRepository;
+
+
 
 
 

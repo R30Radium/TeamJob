@@ -1,0 +1,72 @@
+package telegram.teamjob.implementation;
+
+
+import com.pengrad.telegrambot.BotUtils;
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.ResourceUtils;
+import org.testcontainers.shaded.org.apache.commons.io.FileUtils;
+import telegram.teamjob.repositories.RecordRepository;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import static org.mockito.Mockito.verify;
+import static telegram.teamjob.constants.BotMessageEnum.*;
+
+@ExtendWith(MockitoExtension.class)
+public class RecordServiceImplTest {
+    @Test
+    public void  saveRecordTest1() throws IOException {
+        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
+        RecordServiceImpl recordService = new RecordServiceImpl(
+                Mockito.mock(RecordRepository.class),
+                tgBot
+
+        );
+
+        recordService = Mockito.spy(recordService);
+
+        String info = replacedJson2(RECORD.getMessage());
+        Update update = BotUtils.parseUpdate(info);
+        recordService.saveRecord(update);
+        verify(tgBot).execute(new SendMessage(update.message().chat().id(), SAVE_INFORMATION.getMessage()));
+    }
+
+    public String replacedJson2(String replacement) throws IOException {
+        String json = FileUtils.readFileToString(ResourceUtils.getFile("classpath:updates/update_4.json"),
+                StandardCharsets.UTF_8);
+        return json.replace("%data%", replacement);
+    }
+    @Test
+    public void  saveRecordTest2() throws IOException {
+        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
+        RecordServiceImpl recordService = new RecordServiceImpl(
+                Mockito.mock(RecordRepository.class),
+                tgBot
+
+        );
+
+        recordService = Mockito.spy(recordService);
+
+        String info = replacedJson2("/record\n" +
+                " рацион: мясо, молочные продукты, крупы \n" +
+                " самочувствие: норм \n" +
+                " поведение: правильно реагирует на команды, пока пугается от громких звуков");
+        Update update = BotUtils.parseUpdate(info);
+        recordService.saveRecord(update);
+        verify(tgBot).execute(new SendMessage(update.message().chat().id(), RECORD_ADAPTATION.getMessage()));
+        verify(tgBot).execute(new SendMessage(update.message().chat().id(), SAVE_INFORMATION.getMessage()));
+
+    }
+
+}
+
+
+
+

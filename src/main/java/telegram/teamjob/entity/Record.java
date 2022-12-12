@@ -11,22 +11,51 @@ public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long recordId;
-    private String lifeRecord;
     private Long chatId;
     private LocalDateTime dateTime;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
-    public Record() {}
+    private String diet;
+    private String adaptation;
+    private String changeInBehavior;
 
-    public User getUser() {
-        return user;
+    public String getDiet() {
+        return diet;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setDiet(String diet) {
+        this.diet = diet;
     }
+
+    public String getAdaptation() {
+        return adaptation;
+    }
+
+    public void setAdaptation(String adaptation) {
+        this.adaptation = adaptation;
+    }
+
+    public String getChangeInBehavior() {
+        return changeInBehavior;
+    }
+
+    public void setChangeInBehavior(String changeInBehavior) {
+        this.changeInBehavior = changeInBehavior;
+    }
+
+    //  @ManyToOne
+    // @JoinColumn(name = "user_id")
+    //  private User user;
+
+    public Record() {
+    }
+
+    //  public User getUser() {
+    //      return user;
+    //   }
+
+    //  public void setUser(User user) {
+    //     this.user = user;
+    //  }
 
     public Long getRecordId() {
         return recordId;
@@ -36,9 +65,7 @@ public class Record {
         this.recordId = recordId;
     }
 
-    public String getLifeRecord() {
-        return lifeRecord;
-    }
+
 
     public Long getChatId() {
         return chatId;
@@ -46,10 +73,6 @@ public class Record {
 
     public void setChatId(Long chatId) {
         this.chatId = chatId;
-    }
-
-    public void setLifeRecord(String lifeRecord) {
-        this.lifeRecord = lifeRecord;
     }
 
     public LocalDateTime getDateTime() {
@@ -60,7 +83,7 @@ public class Record {
         this.dateTime = dateTime;
     }
 
-    @Override
+  /*  @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -78,6 +101,32 @@ public class Record {
         return "Record{" +
                 "recordId=" + recordId +
                 ", lifeRecord='" + lifeRecord + '\'' +
+                '}';
+    }
+    */
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Record record = (Record) o;
+        return Objects.equals(recordId, record.recordId) && Objects.equals(chatId, record.chatId) && Objects.equals(dateTime, record.dateTime) && Objects.equals(diet, record.diet) && Objects.equals(adaptation, record.adaptation) && Objects.equals(changeInBehavior, record.changeInBehavior);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(recordId, chatId, dateTime, diet, adaptation, changeInBehavior);
+    }
+
+    @Override
+    public String toString() {
+        return "Record{" +
+                "recordId=" + recordId +
+                ", chatId=" + chatId +
+                ", dateTime=" + dateTime +
+                ", diet='" + diet + '\'' +
+                ", adaptions='" + adaptation + '\'' +
+                ", changeInBehavior='" + changeInBehavior + '\'' +
                 '}';
     }
 }

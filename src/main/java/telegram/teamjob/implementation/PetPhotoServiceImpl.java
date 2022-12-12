@@ -1,4 +1,4 @@
-package telegram.teamjob.service;
+package telegram.teamjob.implementation;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.implementation.PetPhotoService;
+import telegram.teamjob.service.PetPhotoService;
 import telegram.teamjob.entity.PetPhoto;
 import telegram.teamjob.repositories.PetPhotoRepository;
 import telegram.teamjob.repositories.RecordRepository;
@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-
 @Service
 public class PetPhotoServiceImpl implements PetPhotoService {
     Logger logger = LoggerFactory.getLogger(PetPhotoServiceImpl.class);
@@ -38,7 +37,7 @@ public class PetPhotoServiceImpl implements PetPhotoService {
     @Override
     public void uploadPhoto(Long recordId, PhotoSize[] photos) throws IOException {
         logger.info("Was invoked method for upload avatar");
-        Record record = recordRepository.findByRecordId(recordId);
+        Record record = recordRepository.findRecordByRecordId(recordId);
         String fileId = photos[0].fileId();
         String fileName = photos[0].fileUniqueId();
         System.out.println(fileId);
@@ -67,7 +66,7 @@ public class PetPhotoServiceImpl implements PetPhotoService {
             bis.transferTo(bos);
         }
         PetPhoto petPhoto = new PetPhoto();
-        petPhoto.setRecord(record);
+        //petPhoto.setRecord(record);
         petPhoto.setFilePath(filePath.toString());
         petPhoto.setFileSize(photos[0].fileSize());
         br.close();
@@ -79,6 +78,9 @@ public class PetPhotoServiceImpl implements PetPhotoService {
         logger.info("Was invoked method for get extensions");
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
+
+
+
 
 
 }

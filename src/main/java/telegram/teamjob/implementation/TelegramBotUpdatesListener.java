@@ -1,19 +1,17 @@
-package telegram.teamjob.service;
+package telegram.teamjob.implementation;
 
-import com.pengrad.telegrambot.BotUtils;
+
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+import telegram.teamjob.entity.Record;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.constants.BotButtonEnum;
-import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.entity.Contact;
 import telegram.teamjob.entity.InformationForOwner;
 import telegram.teamjob.entity.Shelter;
@@ -23,13 +21,14 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-import static telegram.teamjob.constants.ServiceConstantsMenu.*;
+import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.*;
+import static telegram.teamjob.constants.BotButtonEnum.BUTTON_CHECK_CONTACT;
+import static telegram.teamjob.constants.BotMessageEnum.*;
 
 /**
  * @author shulga_ea <br>
@@ -44,32 +43,54 @@ import static telegram.teamjob.constants.ServiceConstantsMenu.*;
  */
 @Service
 public class TelegramBotUpdatesListener implements UpdatesListener {
+    private final UserRepository userRepository;
+    private final RecordRepository recordRepository;
+    private final PetPhotoRepository petPhotoRepository;
 
     private final TelegramBot telegramBot;
     private final ShelterRepository shelterRepository;
     private final ContactRepository contactRepository;
     private final InformationForOwnerRepository informationForOwnerRepository;
     private final UserServiceImpl userService;
+
     private final RecordServiceImpl recordService;
 
     private final PetPhotoServiceImpl petPhotoService;
+    private final ReportRepository reportRepository;
+    private final VolunteerRepository volunteerRepository;
+
+    private final VolunteerServiceImpl volunteerService;
+
+    private final ContactServiceImpl contactService;
+
+    private final ReportServiceImpl reportService;
+
+    private final ShelterServiceImpl shelterService;
 
     /**
      * константа для шаблона
      * @see Contact
      */
-    static private final String CONTACT_TEXT_PATTERN = "([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)";
-    static private final Pattern pattern = Pattern.compile(CONTACT_TEXT_PATTERN);
-    private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
-    static private String exampleContact = "89061877772 Иванов Иван Иванович";
-    private boolean flag;
+    static private final String USER_TEXT_PATTERN = "([\\W+]+)(\\s)([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)";
+    static private final Pattern pattern = Pattern.compile(USER_TEXT_PATTERN);
 
+    static private final String CONTACT_TEXT_PATTERN = "([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)";
+    static private final Pattern pattern2 = Pattern.compile(CONTACT_TEXT_PATTERN);
+
+    private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
+
+    private boolean flag;
 
     public TelegramBotUpdatesListener(TelegramBot telegramBot, ShelterRepository shelterRepository,
                                       ContactRepository contactRepository,
                                       InformationForOwnerRepository informationForOwnerRepository,
                                       UserServiceImpl userService, RecordServiceImpl recordService,
-                                      PetPhotoServiceImpl petPhotoService) {
+                                      PetPhotoServiceImpl petPhotoService,ReportRepository reportRepository,
+                                      PetPhotoRepository petPhotoRepository,
+                                      RecordRepository recordRepository,
+                                      UserRepository userRepository, VolunteerRepository volunteerRepository,
+                                      VolunteerServiceImpl volunteerService,  ContactServiceImpl contactService,
+                                      ReportServiceImpl reportService, ShelterServiceImpl shelterService) {
         this.telegramBot = telegramBot;
         this.shelterRepository = shelterRepository;
         this.contactRepository = contactRepository;
@@ -77,12 +98,20 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         this.userService = userService;
         this.recordService = recordService;
         this.petPhotoService = petPhotoService;
+        this.reportRepository = reportRepository;
+        this.petPhotoRepository = petPhotoRepository;
+        this.recordRepository = recordRepository;
+        this.userRepository = userRepository;
+        this.volunteerRepository = volunteerRepository;
+        this.volunteerService = volunteerService;
+        this.contactService = contactService;
+        this.reportService = reportService;
+        this.shelterService = shelterService;
     }
 
     @PostConstruct
     public void init() throws IOException {
         String json = Files.readString(Paths.get("update.json"));
-        Update update = BotUtils.parseUpdate(json);
         telegramBot.setUpdatesListener(this);
     }
 
@@ -92,7 +121,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             try {
                 messageHandler(update);
             } catch (Exception e) {
-                throw new RuntimeException("ERROR");
+                logger.info("Информация введена не корректно");
+                telegramBot.execute(new SendMessage(update.message().chat().id(),
+                        "Внимание! Информация введена не кооректно"));
             }
         });
         logger.info("вернул ответ" + UpdatesListener.CONFIRMED_UPDATES_ALL);
@@ -104,11 +135,18 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
      * {@code sendGreetingMessage(update)} <br>
      * @param update
      */
-    private void messageHandler(Update update) {
+    public void messageHandler(Update update)  {
         if (update.callbackQuery() != null) {
             logger.info("CallBackQuery processing");
-            checkButtonAnswer(update);
-            if (update.callbackQuery().data().equals("info") || //команды для меню первого этапа
+            checkButtonAnswerForStatus(update);
+            if(update.callbackQuery().data().equals("Узнать информацию о приюте")||
+                    update.callbackQuery().data().equals("Как взять собаку из приюта")||
+                    update.callbackQuery().data().equals("Прислать отчет о питомце")||
+                    update.callbackQuery().data().equals("Позвать волонтера")){
+
+                checkButtonAnswer(update);
+            }
+            else if(update.callbackQuery().data().equals("info") || //команды для меню первого этапа
                     update.callbackQuery().data().equals("way") ||
                     update.callbackQuery().data().equals("address") ||
                     update.callbackQuery().data().equals("safety") ||
@@ -128,6 +166,13 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     update.callbackQuery().data().equals("reject")){
                 sendResponseForFirstAndSecondMenu(update);
             }
+            else if(update.callbackQuery().data().equals("photo") ||//команды для меню третьего этапа(отчет)
+                    update.callbackQuery().data().equals("record")){
+                sendResponseForThirdMenu(update);
+            }
+            else if(update.callbackQuery().data().equals(BUTTON_CHECK_CONTACT.getMessage())){
+                contactService.getAllContactsForVolunteer(update);
+            }
         }
         else if (update.message().photo() != null) {
             logger.info("Photo Upload processing");
@@ -143,42 +188,71 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             checkAnswer(update);
         }
     }
+    public void checkButtonAnswerForStatus(Update update) {
+        String callBackData = update.callbackQuery().data();
+        logger.info(callBackData);
+        int messageId = update.callbackQuery().message().messageId();
+        long chatId = update.callbackQuery().message().chat().id();
+        switch (callBackData) {
+            case "Волонтер":
+                //вызов  ответа для волонтера
+                telegramBot.execute(new EditMessageText(chatId,messageId, START_MESSAGE_VOLUNTEER.getMessage()).
+                        replyMarkup(volunteerService.menuForVolunteer()));
+                logger.info("Отправил меню для волонтера");
+                break;
+            case "Пользователь":
+                telegramBot.execute(new EditMessageText(chatId,messageId,
+                        START_MESSAGE_USER.getMessage()).replyMarkup(shelterService.ourMenuButtons()));
+                logger.info("Отправил меню для пользователя");
+                break;
+        }
+    }
 
-    public void checkAnswer(Update update) {
+
+    public void checkAnswer(Update update)  {
         Long chatId = update.message().chat().id();
         String inputText = update.message().text();
         if (inputText != null) {
             if (inputText.equals("/start")) {
-                sendGreetingMessage(update);
-            } else if (inputText.equals("/createuser")) {
-                telegramBot.execute(sendMessage(chatId, BotMessageEnum.CREATE_USER_INFO.getMessage()));
-                //  } else if (inputText.matches("([A-zА-я]+)(\\s)([0-9]+)(\\s)([A-zА-я]+)")) {
-            } else if (inputText.matches("([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)")) {
-                logger.info("Processing checkAnswer:");
-                // userService.createUser(update);
-                safeContact(update);
-                logger.info("save contact");
-            } else if (inputText.equals("/send-record")) {
-                String messageForRecords = BotMessageEnum.DAILY_RECORD_INFO.getMessage();
-                telegramBot.execute(sendMessage(chatId, messageForRecords));
-            } else if (flag) {
-                //При нажатии на кнопку 3 (Отправить отчет)
-                logger.info("Processing creating record");
-                // Нужен if На случай некорректного сообщения
-                if (userService.getUser(chatId) != null) {
-                    recordService.createRecord(update);
-                } else {
-                    telegramBot.execute(sendMessage(chatId, BotMessageEnum.USER_NOT_FOUND_MESSAGE.getMessage()));
-                }
-                flag = false;
-            } else {
-                telegramBot.execute(sendMessage(chatId, BotMessageEnum.ASK_HELP.getMessage()));
+                sendGreetingMessageStatus(update);
             }
+            else if (inputText.equals("([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)")){
+                logger.info("Получил данные для создания контакта");
+            }else if(inputText.matches("([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)")){
+                contactService.saveContact(update);
+                logger.info("вызвал метод для сохранения контакта в базе данных");
+            }
+            else if (inputText.contains("/record")) {
+                recordService.saveRecord(update);
+                logger.info("Вызвал метод для сохранения текстового отчета");
+                // }
+                //  else if ((update.message().photo() != null)) {
+                //        logger.info("Photo Upload processing");
+                // long recordId = recordService.findRecordId(update);
+                //inputText.contains("/photo")) {
+                // String messageForRecords = BotMessageEnum.DAILY_RECORD_INFO.getMessage();
+                // telegramBot.execute(sendMessage(chatId, messageForRecords));
+                //    savePetPhoto(update);
+            }
+            else if(inputText.contains(DELETE_COMMAND.getMessage()))
+                contactService.deleteAllContacts(update);
         } else {
-            telegramBot.execute(sendMessage(chatId, BotMessageEnum.ASK_HELP.getMessage()));
+            telegramBot.execute(sendMessage(chatId, ASK_HELP.getMessage()));
         }
     }
 
+
+    public void sendGreetingMessageStatus(Update update) {
+        try {
+            String greetingMessage = update.message().chat().username() + START_MESSAGE.getMessage();
+            telegramBot.execute(new SendMessage(update.message().chat().id(), greetingMessage)
+                    .replyMarkup(volunteerService.userStatusMenuButtons()));
+            logger.info("Отправил меню для определения статуса входа");
+        }
+        catch (NullPointerException e){
+            logger.info("Вернулся не корректный ответ");
+        }
+    }
 
 
     /**
@@ -188,15 +262,16 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
 
     public void sendGreetingMessage(Update update) {
         try {
-            String greetingMessage = update.message().chat().username() + BotMessageEnum.START_MESSAGE.getMessage();
+            String greetingMessage = update.message().chat().username() + START_MESSAGE.getMessage();
             telegramBot.execute(new SendMessage(update.message().chat().id(), greetingMessage)
-                    .replyMarkup(ourMenuButtons()));
+                    .replyMarkup(shelterService.ourMenuButtons()));
             logger.info("Message Sent" + " Method - sendGreeting");
         }
         catch (NullPointerException e){
             logger.info("Вернулся не корректный ответ");
         }
     }
+
 
     private SendMessage sendMessage(long chatId, String textToSend) {
         return new SendMessage(chatId, textToSend);
@@ -211,38 +286,29 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     public void checkButtonAnswer(Update update) {
         String callBackData = update.callbackQuery().data();
         logger.info(callBackData);
-        int messageId = update.callbackQuery().message().messageId();
         long chatId = update.callbackQuery().message().chat().id();
         switch (callBackData) {
             case "Узнать информацию о приюте":
                 //вызов  меню этапа 1
-                String newMessage = "Вы выбрали раздел " + "\n" + "\"Узнать информацию о приюте\". " + "\n"
-                        + "Ознакомьтесь пожалуйста " +
-                        "с меню и выберите интересующий вас пункт";
-                //  EditMessageText messageText = new EditMessageText(chatId, messageId, newMessage);
+                String newMessage = ANSWER_FOR_MENU_SHELTER.getMessage();
                 telegramBot.execute(new SendMessage(chatId, newMessage)
-                        .replyMarkup(makeButtonsForMenuStageOne()));
+                        .replyMarkup(shelterService.makeButtonsForMenuStageOne()));
                 break;
             case "Как взять собаку из приюта":
                 //вызов  меню этапа 2
-                String message = "Вы выбрали раздел " + "\n" + "\"Как взять собаку из приюта\". " + "\n"
-                        + "Ознакомьтесь пожалуйста " +
-                        "с меню и выберите интересующий вас пункт";
+                String message = ANSWER_FOR_MENU_INFORMATION.getMessage();
                 telegramBot.execute(new SendMessage(chatId, message)
-                        .replyMarkup(makeButtonsForMenuStageTwo()));
+                        .replyMarkup(shelterService.makeButtonsForMenuStageTwo()));
                 break;
             case "Прислать отчет о питомце":
                 //Отчет по питомцу
-                String greetingMessage = BotMessageEnum.START_MESSAGE.getMessage();
+                String greetingMessage = ANSWER_FOR_MENU_REPORT.getMessage();
                 telegramBot.execute(new SendMessage(chatId, greetingMessage)
-                        .replyMarkup(ourMenuButtons()));
-                logger.info("Message Sent" + " Method - sendGreeting");
+                        .replyMarkup(reportService.makeButtonsForMenuStageThreeForReport()));
+                logger.info("Выбрано меню - отчет о питомце");
                 break;
             case "Позвать волонтера":
-                //Обращение к волонтеру
-                String newMessage4 = BotMessageEnum.ASK_HELP.getMessage();
-                EditMessageText messageText4 = new EditMessageText(chatId, (int) messageId, newMessage4);
-                telegramBot.execute(messageText4);
+                telegramBot.execute(new SendMessage(chatId, ASK_HELP.getMessage()));
                 break;
         }
     }
@@ -255,6 +321,24 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
      * @see InformationForOwner
      * @param
      */
+
+    public void sendResponseForThirdMenu(Update update) {
+        logger.info(" вызван метод sendResponseForThirdMenu");
+        String answerMenu = update.callbackQuery().data();
+        long chatId = update.callbackQuery().message().chat().id();
+        int messageId = update.callbackQuery().message().messageId();
+        switch (answerMenu) {
+            case "photo":
+                telegramBot.execute(new EditMessageText(chatId, messageId, PHOTO.getMessage()));
+                logger.warn("IMPORTANT" + PHOTO.getMessage());
+                break;
+            case "record":
+                EditMessageText answer2 = new EditMessageText(chatId, messageId, RECORD.getMessage());
+                telegramBot.execute(answer2);
+                logger.warn("send info for client about report");
+                break;
+        }
+    }
 
     public void sendResponseForFirstAndSecondMenu(Update update){
         logger.info("вызвал метод sendAnswer");
@@ -305,7 +389,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         telegramBot.execute(answer);
                     } catch (NullPointerException e) {
                         logger.warn("Инфopмации в базе данных нет");
-
                     }
                 }
                 break;
@@ -317,7 +400,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         telegramBot.execute(answer);
                     } catch (NullPointerException e) {
                         logger.warn("Инфopмации в базе данных нет");
-
                     }
                 }
                 break;
@@ -448,166 +530,23 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         }
     }
 
-    /**
-     * метод проверяет сообщение от пользователя на соответствие шаблону и преобразует его для внесения
-     * в БД  путем вызова метода репозитория {@link ContactRepository#save(Object)} <br>
-     * если сообщение было введено пользователем не верно - бот вернет ответ - что данные не сохранились, так
-     * как сообщение не соответсвует шаблону
-     * так же метод проверяет есть ли уже такой контакт в БД путем вызова метода репозитория <br>
-     * {@link ContactRepository#findContactByNumberPhoneAndName(String, String)} , <br>
-     * если контакт ранее уже был внесен в БД - бот сообщает об этом пользователю  <br>
-     * @param update
-     */
-    public void safeContact(Update update){
-        String text = update.message().text();
-        long chatId = update.message().chat().id();
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.matches()) {
-            String phone = matcher.group(1);
-            String name = matcher.group(3);
-            Contact contact = new Contact();
-            contact.setNumberPhone(phone);
-            contact.setName(name);
-            List<Contact> contacts = contactRepository.findContactByNumberPhoneAndName(phone,name);
-            logger.info(String.valueOf(contacts));
-            try{
-                if(contacts.isEmpty()){
-                    contactRepository.save(contact);
-                    telegramBot.execute(new SendMessage(chatId, "Я сохранил ваши данные в базе данных." +
-                            " Сотрудники приюта свяжутся с Вами."));
-                    logger.info("Данные сохранены в базе данных");
-                } else {
-                    logger.info("такой контакт уже есть в базе данных");
-                    telegramBot.execute(new SendMessage(chatId, "Такой контакт уже есть в базе данных"));
-                }
-            }
-            catch(NullPointerException e){
-                logger.info("пользователь предоставил новый контакт");
-            }
+    // public void  savePetPhoto(Update update) throws IOException {
+    //    PhotoSize[] photos = update.message().photo();
+    //     Long reportId = recordService.findRecordId(update);
+    //    petPhotoService.uploadPhoto(reportId, photos );
+    //    telegramBot.execute(new SendMessage(update.message().chat().id(), SAVE_INFORMATION.getMessage()));
+    //   }
+    @Scheduled(cron = "0 0/1 * /1")
+    public void checkAvailabilityOfReportAndSendReminder(long chatId, LocalDateTime dateTime) {
+        List<Record> records = recordRepository.findAllRecordByChatIdAndDateTime(chatId, dateTime);
+        if(records.isEmpty()){
+            telegramBot.execute(new SendMessage(chatId, REPORT_REMEMBER.getMessage() + dateTime.toString()));
+            logger.info("Пользователю направлено напоминание");
         }
-        else {
-            String warningMessage = "Не смогу сохранить запись. Введенное сообщение не соотствует шаблону: "
-                    + exampleContact + ". Попробуйте еще раз.";
-            telegramBot.execute(new SendMessage(chatId, warningMessage));
-            logger.warn("Не смогу сохранить запись. Введенное сообщение не соотствует шаблону");
-        }
-
-    }
-
-    private InlineKeyboardMarkup ourMenuButtons() {
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        var button1Info = new InlineKeyboardButton(BotButtonEnum.BUTTON_INFO.getMessage());
-        var button2Instruction = new InlineKeyboardButton(BotButtonEnum.BUTTON_INSTRUCTION.getMessage());
-        var button3Record = new InlineKeyboardButton(BotButtonEnum.BUTTON_RECORD.getMessage());
-        var button4Help = new InlineKeyboardButton(BotButtonEnum.BUTTON_HELP.getMessage());
-
-        button1Info.callbackData(BotButtonEnum.BUTTON_INFO.getMessage());
-        button2Instruction.callbackData(BotButtonEnum.BUTTON_INSTRUCTION.getMessage());
-        button3Record.callbackData(BotButtonEnum.BUTTON_RECORD.getMessage());
-        button4Help.callbackData(BotButtonEnum.BUTTON_HELP.getMessage());
-
-        /* Данные кнопки будут располагаться друг под другом. Можно использоваться в линию
-           для этого необходимые кнопки можно перечислить в параметрах markup.addRow(b1, b2, b3, b4);
-           Тогда информация будет сжата по размеру кнопки
-        */
-        markup.addRow(button1Info);
-        markup.addRow(button2Instruction);
-        markup.addRow(button3Record);
-        markup.addRow(button4Help);
-        logger.info("Меню отправлено");
-        return markup;
-    }
-    private InlineKeyboardMarkup makeButtonsForMenuStageOne() {
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        var buttonAboutShelter  = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_INFORMATION_ABOUT_SHELTER.getText());
-        var  buttonWorkTime = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_WORK_SCHEDULE_SHELTER.getText());
-        var  buttonAddress = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_ADDRESS_SHELTER.getText());
-        var   buttonWay = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_DRIVING_DIRECTIONS.getText());
-        var buttonSafety = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_SAFETY_SHELTER.getText());
-        var buttonContact = new com.pengrad.telegrambot.model.request.InlineKeyboardButton("Оставить данные для связи");
-        var buttonVolunteer = new com.pengrad.telegrambot.model.request.InlineKeyboardButton(COMMAND_CALL_VOLUNTEER.getText());
-
-        buttonAboutShelter.callbackData("info");
-        buttonWorkTime.callbackData("workTime");
-        buttonAddress.callbackData("address");
-        buttonWay.callbackData("way");
-        buttonSafety.callbackData("safety");
-        buttonContact.callbackData("contact");
-        buttonVolunteer.callbackData("volunteer");
-
-        markup.addRow(buttonAboutShelter);
-        markup.addRow(buttonWorkTime);
-        markup.addRow(buttonAddress);
-        markup.addRow(buttonWay);
-        markup.addRow(buttonSafety);
-        markup.addRow(buttonContact);
-        markup.addRow(buttonVolunteer);
-        return markup;
-    }
-    private InlineKeyboardMarkup makeButtonsForMenuStageTwo() {
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
-        String rules = " Правила знакомства с животным ";
-        String docs = " Список необходимых документов ";
-        String transportation = " Рекомендация по транспортировке ";
-        String arrangementPuppy = " Как подготовить дом для щенка ";
-        String arrangementDog = " Как подготовить дом для взрослой собаки ";
-        String arrangementDogInvalid = " Как подготовить дом для собаки с " +
-                " ограниченными возможностями ";
-        String cynologist= " Рекомендации от кинологов";
-        String goodCynologist = " Хорошие кинологи ";
-        String reject = " Спиоск причин отказа ";
-        String contact = " Контактные данные ";
-        String volunteer = " Позвать волонтера ";
-
-        var button1Rules = new InlineKeyboardButton(rules);
-        var button2Docs = new InlineKeyboardButton(docs);
-        var button3Transportation = new InlineKeyboardButton(transportation);
-        var button4ArrangementPuppy = new InlineKeyboardButton(arrangementPuppy);
-        var button5ArrangementDog = new InlineKeyboardButton(arrangementDog);
-        var button6ArrangementDogInvalid = new InlineKeyboardButton(arrangementDogInvalid);
-        var button7Cynologist = new InlineKeyboardButton(cynologist);
-        var button8GoodCynologist = new InlineKeyboardButton(goodCynologist);
-        var button9Reject = new InlineKeyboardButton(reject);
-        var button10Contact = new InlineKeyboardButton(contact);
-        var button11Volunteer = new InlineKeyboardButton(volunteer);
-
-        button1Rules.callbackData("rules");
-        button2Docs.callbackData("docs");
-        button3Transportation.callbackData("transpartation");
-        button4ArrangementPuppy.callbackData("arrangementPuppy");
-        button5ArrangementDog.callbackData("arrangementDog");
-        button6ArrangementDogInvalid.callbackData("arrangementDogInvalid");
-        button7Cynologist.callbackData("cynologist");
-        button8GoodCynologist.callbackData("goodCynologists");
-        button9Reject.callbackData("reject");
-        button10Contact.callbackData("contact");
-        button11Volunteer.callbackData("volunteer");
-
-        markup.addRow(button1Rules);
-        markup.addRow(button2Docs);
-        markup.addRow(button3Transportation);
-        markup.addRow(button4ArrangementPuppy);
-        markup.addRow(button5ArrangementDog);
-        markup.addRow(button6ArrangementDogInvalid);
-        markup.addRow(button7Cynologist);
-        markup.addRow(button8GoodCynologist);
-        markup.addRow(button9Reject);
-        markup.addRow(button10Contact);
-        markup.addRow(button11Volunteer);
-        return markup;
-    }
-
-    public Optional<Contact> findContactById(int id){
-        logger.warn("check the correctness of the faculty id");
-        return contactRepository.findById(id);
-    }
-
-    public List<Contact> getAllContacts(){
-        return contactRepository.findAll();
-    }
-    public Contact addContact(Contact contact){
-        return contactRepository.save(contact);
     }
 
 }
+
+
+
 
