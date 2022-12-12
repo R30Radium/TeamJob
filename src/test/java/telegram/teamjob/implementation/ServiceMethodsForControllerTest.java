@@ -108,13 +108,12 @@ public class ServiceMethodsForControllerTest {
         Contact contact = new Contact(1, "89061877772", "Иванов Иван Иванович");
     }
 
-
     @Test
     public void verifyTests() throws Exception {
         String json = Files.readString(Paths.get("update.json"));
         Update update = BotUtils.parseUpdate(json);
         TelegramBotUpdatesListener telegramBotUpdatesListener1 = Mockito.mock(TelegramBotUpdatesListener.class);
-        telegramBotUpdatesListener1.safeContact(update);
+        telegramBotUpdatesListener1.saveContact(update);
         telegramBotUpdatesListener1.sendResponseForFirstAndSecondMenu(update);
         telegramBotUpdatesListener1.checkButtonAnswer(update);
         telegramBotUpdatesListener1.sendGreetingMessage(update);
@@ -122,7 +121,7 @@ public class ServiceMethodsForControllerTest {
         telegramBotUpdatesListener1.process(List.of(update));
 
 
-        verify(telegramBotUpdatesListener1).safeContact(update);
+        verify(telegramBotUpdatesListener1).saveContact(update);
         verify(telegramBotUpdatesListener1).sendResponseForFirstAndSecondMenu(update);
         verify(telegramBotUpdatesListener1).checkButtonAnswer(update);
         verify(telegramBotUpdatesListener1).sendGreetingMessage(update);
@@ -142,7 +141,7 @@ public class ServiceMethodsForControllerTest {
     public void process2() throws IOException {
         String json = Files.readString(Paths.get("update_4_contact.json"));
         Update update = BotUtils.parseUpdate(json);
-        telegramBotUpdatesListener.safeContact(update);
+        telegramBotUpdatesListener.saveContact(update);
         long chatId = update.message().chat().id();
         verify(telegramBot).execute(new SendMessage(chatId, BotMessageEnum.SAVE_INFORMATION.getMessage()));
 

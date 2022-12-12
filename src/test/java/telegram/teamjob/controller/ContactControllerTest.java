@@ -41,8 +41,7 @@ public class ContactControllerTest {
     private ShelterRepository shelterRepository;
     @MockBean
     private  InformationForOwnerRepository informationForOwnerRepository;
-    @MockBean
-    private  UserServiceImpl userService;
+
     @MockBean
     private  RecordServiceImpl recordService;
     @MockBean

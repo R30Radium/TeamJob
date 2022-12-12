@@ -50,8 +50,9 @@ public class RecordServiceImpl implements RecordService {
         Record record = recordsList.peekLast();
         if (record != null) {
             return record.getRecordId();
+        } else if (recordRepository.findAll().isEmpty()) {
+            return null;
         } else {
-            //Добавить условие (Если есть в БД)
             return recordRepository.findRecordByChatId(chatId).getRecordId();
         }
     }
