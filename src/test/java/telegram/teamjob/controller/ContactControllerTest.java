@@ -18,6 +18,7 @@ import telegram.teamjob.implementation.*;
 import telegram.teamjob.repositories.*;
 
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -68,6 +69,9 @@ public class ContactControllerTest {
     private final int id = 2;
     private final String name = "Петров Семен Иванович";
     private final String numberPhone = "89061876655";
+   // @Autowired
+    //private ContactRepository contactRepository;
+
 
     @Test
     public void getContactByIdTestPositive() throws Exception {
@@ -94,12 +98,24 @@ public class ContactControllerTest {
     @Test
     public void getAllContactTestPositive() throws Exception {
 
-        Mockito.when(contactRepositoryTest.save(Mockito.any())).thenReturn(contact);
+        Mockito.when(contactServiceImpl.addContact(Mockito.any())).thenReturn(contact);
         Mockito.when(contactRepositoryTest.findAll()).thenReturn(List.of(contact));
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/contact")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+
+    }
+
+    @Test
+    public void getAllContactTestNegative() throws Exception {
+
+        Mockito.when(contactServiceImpl.addContact(Mockito.any())).thenReturn(null);
+        Mockito.when(contactRepositoryTest.findAll()).thenReturn(null);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/contact")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
     }
 
@@ -113,8 +129,9 @@ public class ContactControllerTest {
                             .accept(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.id").value(id))
-                    .andExpect(jsonPath("$.numberPhone").value(numberPhone))
-                    .andExpect(jsonPath("$.name").value(name));
+             .andExpect(jsonPath("$.name").value(name))
+                    .andExpect(jsonPath("$.numberPhone").value(numberPhone));
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

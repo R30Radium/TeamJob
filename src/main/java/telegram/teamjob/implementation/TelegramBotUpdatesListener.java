@@ -326,15 +326,16 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         logger.info(" вызван метод sendResponseForThirdMenu");
         String answerMenu = update.callbackQuery().data();
         long chatId = update.callbackQuery().message().chat().id();
-        int messageId = update.callbackQuery().message().messageId();
+      //  int messageId = update.callbackQuery().message().messageId();
         switch (answerMenu) {
             case "photo":
-                telegramBot.execute(new EditMessageText(chatId, messageId, PHOTO.getMessage()));
+              //  telegramBot.execute(new EditMessageText(chatId, messageId, PHOTO.getMessage()));
+                telegramBot.execute(new SendMessage(chatId,PHOTO.getMessage()));
                 logger.warn("IMPORTANT" + PHOTO.getMessage());
                 break;
             case "record":
-                EditMessageText answer2 = new EditMessageText(chatId, messageId, RECORD.getMessage());
-                telegramBot.execute(answer2);
+             //   EditMessageText answer2 = new EditMessageText(chatId, messageId, RECORD.getMessage());
+                telegramBot.execute(new SendMessage(chatId, RECORD.getMessage()));
                 logger.warn("send info for client about report");
                 break;
         }

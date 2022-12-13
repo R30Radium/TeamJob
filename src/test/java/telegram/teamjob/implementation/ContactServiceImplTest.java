@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
@@ -15,6 +16,8 @@ import telegram.teamjob.repositories.ContactRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.mockito.Mockito.verify;
 import static telegram.teamjob.constants.BotMessageEnum.SAVE_INFORMATION_CONTACT;
@@ -35,7 +38,11 @@ public class ContactServiceImplTest {
         String info = replacedJson2("89061877772 Иванов Иван Иванович ");
         Update update = BotUtils.parseUpdate(info);
         contactService.saveContact(update);
-        verify(tgBot).execute(new SendMessage(update.message().chat().id(), SAVE_INFORMATION_CONTACT.getMessage()));
+     verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual->{
+    Map<String,Object> parameters = actual.getParameters();
+    return Objects.equals(parameters.get("chat_id"),update.message().chat().id())
+            && Objects.equals(parameters.get("text"), SAVE_INFORMATION_CONTACT.getMessage());
+}));
     }
 
     public String replacedJson2(String replacement) throws IOException {
@@ -43,6 +50,8 @@ public class ContactServiceImplTest {
                 StandardCharsets.UTF_8);
         return json.replace("%data%", replacement);
     }
+
+
 }
 
 

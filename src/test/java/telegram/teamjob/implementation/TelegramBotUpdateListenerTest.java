@@ -8,6 +8,9 @@ import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
@@ -17,8 +20,12 @@ import telegram.teamjob.repositories.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
+import static io.restassured.RestAssured.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static telegram.teamjob.constants.BotMessageEnum.*;
@@ -150,7 +157,6 @@ public class TelegramBotUpdateListenerTest {
                 Mockito.mock(ShelterServiceImpl.class)
 
 
-
         );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
@@ -227,11 +233,15 @@ public class TelegramBotUpdateListenerTest {
 
         String info = replacedJson("record");
         Update update = BotUtils.parseUpdate(info);
+        long chatId = update.callbackQuery().message().chat().id();
         telegramBotUpdatesListener.sendResponseForThirdMenu(update);
-        verify(tgBot).execute(new EditMessageText(update.callbackQuery().message().chat().id(),
-                update.callbackQuery().message().messageId(),RECORD.getMessage()));
-
+        verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual -> {
+            Map<String, Object> parameters = actual.getParameters();
+            return Objects.equals(parameters.get("chat_id"), chatId)
+                    && Objects.equals(parameters.get("data"), RECORD.getMessage());
+        }));
     }
+
     @Test
     public void sendResponseForThirdMenu2Test() throws IOException {
         TelegramBot tgBot = Mockito.mock(TelegramBot.class);
@@ -260,41 +270,12 @@ public class TelegramBotUpdateListenerTest {
         String info = replacedJson("photo");
         Update update = BotUtils.parseUpdate(info);
         long chatId = update.callbackQuery().message().chat().id();
-        int messageId = update.callbackQuery().message().messageId();
         telegramBotUpdatesListener.sendResponseForThirdMenu(update);
-        verify(tgBot).execute(new EditMessageText(chatId, messageId, PHOTO.getMessage()));
+        verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual -> {
+            Map<String, Object> parameters = actual.getParameters();
+            return Objects.equals(parameters.get("chat_id"), chatId)
+                    && Objects.equals(parameters.get("data"), PHOTO.getMessage());
+        }));
+
     }
-
-
-    @Test
-    public void  checkAvailabilityOfReportAndSendRemindeTest(){
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-
-        );
-        telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
-        long chatId = 23977364L;
-        LocalDateTime dateTime = LocalDateTime.parse("1986-04-08T12:30:00");
-        telegramBotUpdatesListener.checkAvailabilityOfReportAndSendReminder(chatId, dateTime);
-        verify(tgBot).execute(new SendMessage(chatId, REPORT_REMEMBER.getMessage() + dateTime));
-    }
-
-
 }

@@ -18,6 +18,15 @@ public class Record {
     private String adaptation;
     private String changeInBehavior;
 
+    public Record(Long recordId, Long chatId, LocalDateTime dateTime, String diet, String adaptation, String changeInBehavior) {
+        this.recordId = recordId;
+        this.chatId = chatId;
+        this.dateTime = dateTime;
+        this.diet = diet;
+        this.adaptation = adaptation;
+        this.changeInBehavior = changeInBehavior;
+    }
+
     public String getDiet() {
         return diet;
     }
