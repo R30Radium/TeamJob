@@ -6,10 +6,10 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,12 +20,9 @@ import telegram.teamjob.repositories.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static io.restassured.RestAssured.when;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static telegram.teamjob.constants.BotMessageEnum.*;
@@ -235,11 +232,13 @@ public class TelegramBotUpdateListenerTest {
         Update update = BotUtils.parseUpdate(info);
         long chatId = update.callbackQuery().message().chat().id();
         telegramBotUpdatesListener.sendResponseForThirdMenu(update);
-        verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual -> {
-            Map<String, Object> parameters = actual.getParameters();
-            return Objects.equals(parameters.get("chat_id"), chatId)
-                    && Objects.equals(parameters.get("data"), RECORD.getMessage());
-        }));
+
+        ArgumentCaptor<SendMessage> actual = ArgumentCaptor.forClass(SendMessage.class); // объект для захвата аргумента
+        verify(tgBot).execute(actual.capture()); // проверяем, что вызвался метод и говорим, чтобы аргумен захватился
+
+        Map<String, Object> parameters = actual.getValue().getParameters(); // достаём из захваченного аргумента параметр и проверяем
+        Assertions.assertThat(parameters.get("chat_id")).isEqualTo(chatId);
+        Assertions.assertThat(parameters.get("text")).isEqualTo( RECORD.getMessage());
     }
 
     @Test
