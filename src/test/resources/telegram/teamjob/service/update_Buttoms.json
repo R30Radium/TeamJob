@@ -1,0 +1,29 @@
+{
+  "update_id": 874199391,
+  "message": {
+    "message_id": 33111,
+    "from": {
+      "id": 1231231231,
+      "is_bot": false,
+      "first_name": "RRRR",
+      "username": "test_user"
+    },
+    "chat": {
+      "id": -23123123123123,
+      "title": "title",
+      "type": "chat_type",
+      "username": "test_user"
+    },
+    "date": 1579958705,
+    "text": "89061877772 Иванов Иван Иванович"
+  },
+  "callback_query": {
+    "data": "%text%",
+    "message": {
+      "message_id": 123,
+      "chat": {
+        "id": 1300060749
+      }
+    }
+  }
+}
