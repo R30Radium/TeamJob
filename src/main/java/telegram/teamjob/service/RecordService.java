@@ -1,4 +1,4 @@
-package telegram.teamjob.service;
+package telegram.teamjob.Service;
 
 
 import com.pengrad.telegrambot.model.Update;
@@ -6,8 +6,6 @@ import telegram.teamjob.entity.Record;
 
 public interface RecordService {
 
-    // Record getStringRecord(Update update);
-    //  void createRecord(Update update);
     Long findRecordId(Update update);
 
     void saveRecord(Update update);

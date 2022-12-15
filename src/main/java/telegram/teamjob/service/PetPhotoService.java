@@ -1,4 +1,4 @@
-package telegram.teamjob.service;
+package telegram.teamjob.Service;
 
 import com.pengrad.telegrambot.model.PhotoSize;
 import java.io.IOException;
