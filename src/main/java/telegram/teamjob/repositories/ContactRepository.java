@@ -15,6 +15,5 @@ public interface ContactRepository extends JpaRepository<Contact, Integer> {
 
 
 
-
 }
 

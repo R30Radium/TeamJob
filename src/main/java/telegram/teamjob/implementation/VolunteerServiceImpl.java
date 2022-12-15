@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import telegram.teamjob.repositories.ContactRepository;
 import telegram.teamjob.repositories.VolunteerRepository;
-import telegram.teamjob.service.VolunteerService;
+import telegram.teamjob.Service.VolunteerService;
 
 import static telegram.teamjob.constants.BotButtonEnum.*;
 import static telegram.teamjob.constants.BotMessageVolunteer.MESSAGE_FOR_ADOPTER;

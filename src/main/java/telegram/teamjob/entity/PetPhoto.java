@@ -14,11 +14,16 @@ public class PetPhoto {
 
     private String filePath;
     private long fileSize;
-    // @ManyToOne
-    // @OneToOne
-    //  @JoinColumn(name = "record_id")
-    //  private Record record;
+     @ManyToOne
+      @JoinColumn(name = "record_id")
+      private Record record;
 
+    public PetPhoto() {
+    }
+
+    public Long getPetPhotosId() {
+        return petPhotosId;
+    }
 
     // public Record getRecord() {
     //      return record;
@@ -32,8 +37,8 @@ public class PetPhoto {
     public PetPhoto() {
     }
 
-    public Long getPetPhotosId() {
-        return petPhotosId;
+    public void setRecord(Record record) {
+        this.record = record;
     }
 
     public void setPetPhotosId(Long petPhotosId) {

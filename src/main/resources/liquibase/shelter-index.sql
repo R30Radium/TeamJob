@@ -59,6 +59,7 @@ CREATE TABLE records
 (
     record_id    BIGSERIAL NOT NULL PRIMARY KEY,
     chat_id BIGSERIAL NOT NULL,
+    FOREIGN KEY (chat_id) REFERENCES users (chat_Id),
     date_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     diet TEXT      NOT NULL,
     adaptation TEXT      NOT NULL,

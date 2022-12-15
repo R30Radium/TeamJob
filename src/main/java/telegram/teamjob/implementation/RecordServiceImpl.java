@@ -7,7 +7,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.service.RecordService;
+import telegram.teamjob.Service.RecordService;
 import telegram.teamjob.entity.User;
 import telegram.teamjob.repositories.RecordRepository;
 import telegram.teamjob.repositories.UserRepository;
@@ -18,7 +18,7 @@ import java.util.LinkedList;
 import static telegram.teamjob.constants.BotMessageEnum.*;
 import static telegram.teamjob.constants.BotMessageEnum.SAVE_INFORMATION;
 @Service
-public class RecordServiceImpl implements RecordService {
+public class RecordServiceImpl implements RecordService{
     private Logger logger = LoggerFactory.getLogger(RecordServiceImpl.class);
     private final RecordRepository recordRepository;
     private TelegramBot telegramBot;
@@ -38,10 +38,12 @@ public class RecordServiceImpl implements RecordService {
         Record record = recordsList.peekLast();
         if (record != null) {
             return record.getRecordId();
+        } else if (recordRepository.findAll().isEmpty()) {
+            telegramBot.execute(new SendMessage(chatId, "Для начала отчёт"));
         } else {
-            //Добавить условие (Если есть в БД)
             return recordRepository.findRecordByChatId(chatId).getRecordId();
         }
+        return null;
     }
     /**
      * метод сохраняет в базе данных часть отчета отвечающую за информацию  <br>
@@ -50,38 +52,18 @@ public class RecordServiceImpl implements RecordService {
      * @param update
      */
 
-    public void saveRecord(Update update) {
+    public void saveRecord (Update update) {
+        logger.info("Процесс сохранения отчета");
         LocalDateTime localDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
         String record = update.message().text();
-        StringBuilder builder = new StringBuilder(record);
-        builder.delete(0,6);
-        String result = builder.toString();
         long chatId = update.message().chat().id();
-        int one = result.indexOf("рацион");
-        int two = result.indexOf("самочувствие");
-        String diet = result.substring(one, two);
-        StringBuilder builder2 = new StringBuilder(diet);
-        builder2.delete(0, 7);
-        String dietResult = builder2.toString();
+        int dietIndex = record.indexOf("Диета:");
+        int adaptationIndex = record.indexOf("Адаптация:");
+        int behaviorIndex = record.indexOf("Изменение в поведении:");
 
-        int three = result.indexOf("самочувствие");
-        int four = result.indexOf("поведение");
-        String adaptation = result.substring(three,four);
-        StringBuilder builder3 = new StringBuilder(adaptation);
-        builder3.delete(0, 13);
-        String adaptationResult = builder3.toString();
-
-        String behavior = result.substring(four);
-        StringBuilder builder4 = new StringBuilder(behavior);
-        builder4.delete(0, 10);
-        String behaviorResult = builder4.toString();
-
-        Record recordForBase = new Record();
-        recordForBase.setDiet(dietResult);
-        recordForBase.setAdaptation(adaptationResult);
-        recordForBase.setChangeInBehavior(behaviorResult);
-        recordForBase.setChatId(chatId);
-        recordForBase.setDateTime(localDate);
+        String dietResult = record.substring(dietIndex, adaptationIndex);
+        String adaptationResult = record.substring(adaptationIndex, behaviorIndex);
+        String behaviorResult = record.substring(behaviorIndex, record.length());
 
 
         if (dietResult.length() < 8){
@@ -92,12 +74,17 @@ public class RecordServiceImpl implements RecordService {
         }
         else if(behaviorResult.length()< 8) {
             telegramBot.execute(new SendMessage(chatId,RECORD_BEHAVIOR.getMessage()));
+        } else {
+            Record recordForBase = new Record();
+            recordForBase.setDiet(dietResult);
+            recordForBase.setAdaptation(adaptationResult);
+            recordForBase.setChangeInBehavior(behaviorResult);
+            recordForBase.setChatId(chatId);
+            recordForBase.setDateTime(localDate);
+            recordRepository.save(recordForBase);
+            telegramBot.execute(new SendMessage(chatId, SAVE_INFORMATION.getMessage()));
+            logger.info("текстовый отчет занесен в базу данных");
         }
-        recordRepository.save(recordForBase);
-        telegramBot.execute(new SendMessage(chatId, SAVE_INFORMATION.getMessage()));
-        logger.info("текстовый отчет занесен в базу данных");
-
     }
-
 
 }

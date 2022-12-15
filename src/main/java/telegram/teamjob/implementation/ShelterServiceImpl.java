@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import telegram.teamjob.repositories.ShelterRepository;
-import telegram.teamjob.service.ShelterService;
+import telegram.teamjob.Service.ShelterService;
 
 import static telegram.teamjob.constants.BotButtonEnum.*;
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.*;

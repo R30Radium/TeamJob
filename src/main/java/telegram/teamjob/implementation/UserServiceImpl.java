@@ -3,7 +3,6 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.service.UserService;
 import telegram.teamjob.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,40 +15,21 @@ import java.util.regex.Pattern;
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.BOT_ANSWER_NOT_SAVED_INFO;
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.BOT_ANSWER_NOT_SAVED_INFO_LOG;
 import static telegram.teamjob.constants.BotMessageEnum.SAVE_INFORMATION;
+import static telegram.teamjob.implementation.TelegramBotUpdatesListener.CONTACT_TEXT_PATTERN;
+
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl {
 
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
 
     private TelegramBot telegramBot;
-    static private final String USER_TEXT_PATTERN = "([\\W+]+)(\\s)([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)";
-    static private final Pattern pattern = Pattern.compile(USER_TEXT_PATTERN);
+    static private final Pattern pattern = Pattern.compile(CONTACT_TEXT_PATTERN);
     public UserServiceImpl(TelegramBot tgBot, UserRepository userRepository) {
         this.userRepository = userRepository;
         this.telegramBot = tgBot;
     }
 
-    @Override
-    public User getStringUser(Update update) {
-        logger.info("getStringUser method");
-        Long chatId = update.message().chat().id();
-
-        String message = update.message().text();
-
-        String[] words = message.split(" ");
-        String userName = words[0];
-        String userNumber = words[1];
-        String userPetName = words[2];
-
-        // Проверка на переданное сообщение
-        User newUser = new User();
-        newUser.setUserName(userName);
-        newUser.setNumberPhone(userNumber);
-        newUser.setPetName(userPetName);
-        newUser.setChatId(chatId);
-        return newUser;
-    }
 
     /**
      * метод проверяет сообщение от пользователя на соответствие шаблону и преобразует его для внесения
@@ -62,18 +42,17 @@ public class UserServiceImpl implements UserService {
      * @param update
      */
     public void createUser(Update update){
+        logger.info("Создание пользователя");
         String text = update.message().text();
         long chatId = update.message().chat().id();
         Matcher matcher = pattern.matcher(text);
         if (matcher.matches()) {
-            String pet = matcher.group(1);
-            String phone = matcher.group(3);
-            String name = matcher.group(5);
+            String phone = matcher.group(1);
+            String name = matcher.group(3);
             User user = new User();
             user.setNumberPhone(phone);
             user.setUserName(name);
             user.setChatId(chatId);
-            user.setPetName(pet);
 
             List<User> userFromBase = userRepository.findAllUsersByChatId(chatId);
             logger.info(String.valueOf(userFromBase));
@@ -88,7 +67,7 @@ public class UserServiceImpl implements UserService {
                 }
             }
             catch(NullPointerException e){
-                logger.info("пользователь предоставил информацию о себе");
+                logger.info("пользователь не предоставил информацию о себе"+e);
             }
         }
         else {
@@ -103,7 +82,6 @@ public class UserServiceImpl implements UserService {
     //      logger.info("Creating new User");
     //     return userRepository.save(getStringUser(update));
     //  }
-    @Override
     public User getUser(Long chatId) {
         return userRepository.findByChatId(chatId);
     }

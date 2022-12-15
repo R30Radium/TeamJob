@@ -8,8 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import telegram.teamjob.entity.Contact;
+import telegram.teamjob.entity.User;
 import telegram.teamjob.repositories.ContactRepository;
-import telegram.teamjob.service.ContactService;
+import telegram.teamjob.Service.ContactService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -19,10 +20,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.BOT_ANSWER_NOT_SAVED_CONTACT;
 import static telegram.teamjob.constants.BotMessageEnum.*;
+import static telegram.teamjob.implementation.TelegramBotUpdatesListener.CONTACT_TEXT_PATTERN;
 
 @Service
 public class ContactServiceImpl implements ContactService {
-    static private final String CONTACT_TEXT_PATTERN = "([0-9\\\\\\\\\\\s]{11})(\\s)([\\W+]+)";
     static private final Pattern pattern2 = Pattern.compile(CONTACT_TEXT_PATTERN);
     private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private  final ContactRepository contactRepository;
@@ -35,6 +36,7 @@ public class ContactServiceImpl implements ContactService {
     }
     @Override
     public void saveContact(Update update){
+        logger.info("Сохранение контакта");
         String text = update.message().text();
         long chatId = update.message().chat().id();
         LocalDateTime localDateTime =  LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);

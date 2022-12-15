@@ -18,18 +18,6 @@ public class User {
     private long chatId;
     private String petName;
 
-    @ManyToOne()
-    @JoinColumn(name = "report")
-    @JsonIgnore
-    private Report report;
-
-    public Report getReport() {
-        return report;
-    }
-    public void setReport(Report report) {
-        this.report = report;
-    }
-
     public User(){
 
     }

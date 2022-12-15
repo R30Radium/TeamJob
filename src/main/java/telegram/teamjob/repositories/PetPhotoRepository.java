@@ -9,4 +9,7 @@ import java.util.Optional;
 public interface
 PetPhotoRepository extends PagingAndSortingRepository<PetPhoto, Long> {
     Optional<PetPhoto> findById(Long recordId);
+
+    PetPhoto findPetPhotoByPetPhotosId(Long petPhotoId);
+
 }

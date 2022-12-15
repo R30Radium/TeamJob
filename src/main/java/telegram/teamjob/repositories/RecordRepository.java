@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface RecordRepository extends JpaRepository<Record, Long> {
 
-    Record findRecordByRecordId(long recordId);
+    Record findByRecordId(long recordId);
     LinkedList<Record> findAllRecordByChatId(long chatId);
     Record findRecordByChatId(long chatId);
     List<Record> findAllRecordByChatIdAndDateTime(long chatId, LocalDateTime dateTime);

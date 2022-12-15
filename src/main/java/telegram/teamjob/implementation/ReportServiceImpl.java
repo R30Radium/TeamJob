@@ -6,7 +6,7 @@ import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import telegram.teamjob.service.ReportService;
+import telegram.teamjob.Service.ReportService;
 
 @Service
 public class ReportServiceImpl implements ReportService {

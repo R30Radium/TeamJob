@@ -7,6 +7,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,31 +31,28 @@ import static telegram.teamjob.constants.BotMessageEnum.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TelegramBotUpdateListenerTest {
+    private TelegramBot tgBot = Mockito.mock(TelegramBot.class);
+    private TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
+            Mockito.mock(UserRepository.class),
+            Mockito.mock(RecordRepository.class),
+            Mockito.mock(PetPhotoRepository.class),
+            tgBot,
+            Mockito.mock(ShelterRepository.class),
+            Mockito.mock(ContactRepository.class),
+            Mockito.mock(InformationForOwnerRepository.class),
+            Mockito.mock(UserServiceImpl.class),
+            Mockito.mock(RecordServiceImpl.class),
+            Mockito.mock(PetPhotoServiceImpl.class),
+            Mockito.mock(VolunteerRepository.class),
+            Mockito.mock(VolunteerServiceImpl.class),
+            Mockito.mock(ContactServiceImpl.class),
+            Mockito.mock(ReportServiceImpl.class),
+            Mockito.mock(ShelterServiceImpl.class)
+    );
 
     @Test
     public void checkButtonAnswerTest1() throws IOException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-        );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
-
         String info = replacedJson("Узнать информацию о приюте");
         Update update = BotUtils.parseUpdate(info);
         telegramBotUpdatesListener.checkButtonAnswer(update);
@@ -70,28 +69,6 @@ public class TelegramBotUpdateListenerTest {
 
     @Test
     public void checkButtonAnswerTest2() throws IOException, URISyntaxException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-        );
-        telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
-
         String info = replacedJson("Как взять собаку из приюта");
         Update update = BotUtils.parseUpdate(info);
         telegramBotUpdatesListener.checkButtonAnswer(update);
@@ -102,28 +79,6 @@ public class TelegramBotUpdateListenerTest {
 
     @Test
     public void checkButtonAnswerTest3() throws IOException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-
-        );
-
         String info2 = replacedJson("Прислать отчет о питомце");
         Update update2 = BotUtils.parseUpdate(info2);
         telegramBotUpdatesListener.checkButtonAnswer(update2);
@@ -134,27 +89,6 @@ public class TelegramBotUpdateListenerTest {
 
     @Test
     public void checkButtonAnswerTest4() throws IOException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-
-        );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson("Позвать волонтера");
@@ -167,27 +101,6 @@ public class TelegramBotUpdateListenerTest {
 
     @Test
     public void sendGreetingMessageTest() throws IOException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-
-        );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson2("/start");
@@ -206,26 +119,6 @@ public class TelegramBotUpdateListenerTest {
 
     @Test
     public void sendResponseForThirdMenu1Test() throws IOException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-        );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson("record");
@@ -238,32 +131,11 @@ public class TelegramBotUpdateListenerTest {
 
         Map<String, Object> parameters = actual.getValue().getParameters(); // достаём из захваченного аргумента параметр и проверяем
         Assertions.assertThat(parameters.get("chat_id")).isEqualTo(chatId);
-        Assertions.assertThat(parameters.get("text")).isEqualTo( RECORD.getMessage());
+        Assertions.assertThat(parameters.get("text")).isEqualTo(RECORD.getMessage());
     }
 
     @Test
     public void sendResponseForThirdMenu2Test() throws IOException {
-        TelegramBot tgBot = Mockito.mock(TelegramBot.class);
-        TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
-                tgBot,
-                Mockito.mock(ShelterRepository.class),
-                Mockito.mock(ContactRepository.class),
-                Mockito.mock(InformationForOwnerRepository.class),
-                Mockito.mock(UserServiceImpl.class),
-                Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class),
-                Mockito.mock(ReportRepository.class),
-                Mockito.mock(PetPhotoRepository.class),
-                Mockito.mock(RecordRepository.class),
-                Mockito.mock(UserRepository.class),
-                Mockito.mock(VolunteerRepository.class),
-                Mockito.mock(VolunteerServiceImpl.class),
-                Mockito.mock(ContactServiceImpl.class),
-                Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-
-
-        );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson("photo");

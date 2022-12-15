@@ -13,7 +13,6 @@ public class Record {
     private Long recordId;
     private Long chatId;
     private LocalDateTime dateTime;
-
     private String diet;
     private String adaptation;
     private String changeInBehavior;
@@ -51,20 +50,9 @@ public class Record {
         this.changeInBehavior = changeInBehavior;
     }
 
-    //  @ManyToOne
-    // @JoinColumn(name = "user_id")
-    //  private User user;
-
     public Record() {
     }
 
-    //  public User getUser() {
-    //      return user;
-    //   }
-
-    //  public void setUser(User user) {
-    //     this.user = user;
-    //  }
 
     public Long getRecordId() {
         return recordId;
@@ -73,7 +61,6 @@ public class Record {
     public void setRecordId(Long recordId) {
         this.recordId = recordId;
     }
-
 
 
     public Long getChatId() {
@@ -91,28 +78,6 @@ public class Record {
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
-
-  /*  @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Record record = (Record) o;
-        return Objects.equals(recordId, record.recordId) && Objects.equals(lifeRecord, record.lifeRecord);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(recordId, lifeRecord);
-    }
-
-    @Override
-    public String toString() {
-        return "Record{" +
-                "recordId=" + recordId +
-                ", lifeRecord='" + lifeRecord + '\'' +
-                '}';
-    }
-    */
 
     @Override
     public boolean equals(Object o) {
