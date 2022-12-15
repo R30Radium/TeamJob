@@ -1,8 +1,7 @@
-package telegram.teamjob.Service;
+package telegram.teamjob.implementation;
 
 import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.CallbackQuery;
 import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.EditMessageText;
@@ -11,13 +10,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import telegram.teamjob.Service.PetPhotoServiceImpl;
+import telegram.teamjob.Service.RecordServiceImpl;
+import telegram.teamjob.Service.TelegramBotUpdatesListener;
 import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.entity.PetPhoto;
 import telegram.teamjob.entity.Record;
@@ -36,8 +37,6 @@ import java.util.regex.Matcher;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static telegram.teamjob.Service.TelegramBotUpdatesListener.PATTERN;
-import static telegram.teamjob.constants.BotMessageEnum.*;
-import static telegram.teamjob.constants.BotButtonEnum.*;
 import static telegram.teamjob.implementation.TestUtils.*;
 
 
