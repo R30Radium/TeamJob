@@ -17,12 +17,26 @@
     "date": 1579958705,
     "photo": [
       {
-        "file_id": "AgACAgIAAxkBAAEaRk9jfnsJEZJ9jjhRtLvcghLAbpnexAAC3MQxGxlP8EvUEQ9Bas69AQEAAwIAA20AAysE",
+        "file_id": "AgACAgIAAxkBAAIB02N-nM1VkJn9lJN3QMj6QF30wCNxAALcxDEbGU_wSznDeK8aD0XeAQADAgADcwADLAQ",
+        "file_unique_id": "AQAD3MQxGxlP8Et4",
+        "file_size": 1874,
+        "width": 90,
+        "height": 90
+      },
+      {
+        "file_id": "AgACAgIAAxkBAAIB02N-nM1VkJn9lJN3QMj6QF30wCNxAALcxDEbGU_wSznDeK8aD0XeAQADAgADcwADLAQ",
         "file_unique_id": "AQAD3MQxGxlP8Ety",
         "file_size": 24546,
         "width": 320,
         "height": 320
+      },
+      {
+        "file_id": "AgACAgIAAxkBAAIB02N-nM1VkJn9lJN3QMj6QF30wCNxAALcxDEbGU_wSznDeK8aD0XeAQADAgADcwADLAQ",
+        "file_unique_id": "AQAD3MQxGxlP8Et9",
+        "file_size": 30854,
+        "width": 400,
+        "height": 400
       }
-      ]
+    ]
   }
 }
