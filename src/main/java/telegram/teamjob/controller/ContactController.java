@@ -12,7 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import telegram.teamjob.entity.Contact;
-import telegram.teamjob.Service.TelegramBotUpdatesListener;
+import telegram.teamjob.implementation.ContactServiceImpl;
+import telegram.teamjob.implementation.TelegramBotUpdatesListener;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +23,11 @@ import java.util.Optional;
 @RequestMapping("/contact")
 public class ContactController {
 
-    private final TelegramBotUpdatesListener telegramBotUpdatesListener;
-
+    private final ContactServiceImpl contactServiceImpl;
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
-    public ContactController(TelegramBotUpdatesListener telegramBotUpdatesListener){
-        this.telegramBotUpdatesListener = telegramBotUpdatesListener;
+    public ContactController(ContactServiceImpl contactServiceImpl){
+        this.contactServiceImpl = contactServiceImpl;
     }
     @Operation(summary = "Поиск контакта по id",
             responses = {
@@ -42,7 +42,7 @@ public class ContactController {
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Contact>> getContact(@Parameter(description = "id контакта, для корректного поиска нужно указать верный id", required = true, example = "1")
                                                         @PathVariable int id){
-        Optional <Contact> contact = telegramBotUpdatesListener.findContactById(id);
+        Optional <Contact> contact = contactServiceImpl.findContactById(id);
         if(contact .isEmpty() ){
             return ResponseEntity.notFound().build();
         }
@@ -59,7 +59,7 @@ public class ContactController {
                             ))}, tags = "Contact")
     @GetMapping
     public ResponseEntity<List<Contact>> findAllContacts(){
-        List<Contact> contacts = telegramBotUpdatesListener.getAllContacts();
+        List<Contact> contacts = contactServiceImpl.getAllContacts();
         if(contacts == null ){
             logger.warn("В базе данных нет контактов");
             return ResponseEntity.notFound().build();
@@ -79,7 +79,7 @@ public class ContactController {
 
     @PostMapping("/newContact")
     public Contact addContact(@RequestBody Contact contact){
-        return telegramBotUpdatesListener.addContact(contact);
+        return contactServiceImpl.addContact(contact);
     }
 }
 

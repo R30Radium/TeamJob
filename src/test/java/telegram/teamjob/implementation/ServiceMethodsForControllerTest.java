@@ -47,36 +47,34 @@ public class ServiceMethodsForControllerTest {
 
 
     @Mock
-    TelegramBot telegramBot;
+    private TelegramBot telegramBot;
+    @InjectMocks
+    private ContactServiceImpl contactServiceImpl;
     @InjectMocks
     private TelegramBotUpdatesListener telegramBotUpdatesListener;
 
-    public ServiceMethodsForControllerTest() {
-    }
-
-    ;
-
+    public ServiceMethodsForControllerTest(){};
     @Test
     public void addContact() {
         Mockito.when(contactRepository.save(new Contact(1, "89061877772", "Иванов Иван Иванович"))).thenReturn(new Contact(1, "89061877772", "Иванов Иван Иванович"));
-        Assertions.assertEquals(new Contact(1, "89061877772", "Иванов Иван Иванович"), telegramBotUpdatesListener.addContact(new Contact(1, "89061877772", "Иванов Иван Иванович")));
+        Assertions.assertEquals(new Contact(1, "89061877772", "Иванов Иван Иванович"), contactServiceImpl.addContact(new Contact(1, "89061877772", "Иванов Иван Иванович")));
     }
 
     @Test
     public void findContactByIdPositive() {
         Contact contact = new Contact(1, "89061877772", "Иванов Иван Иванович");
         Mockito.when(contactRepository.save(contact)).thenReturn(contact);
-        Assertions.assertEquals(contact, telegramBotUpdatesListener.addContact(contact));
+        Assertions.assertEquals(contact, contactServiceImpl.addContact(contact));
 
         Mockito.when(contactRepository.findById(1)).thenReturn(Optional.of(contact));
-        Assertions.assertEquals(Optional.of(contact), telegramBotUpdatesListener.findContactById(1));
+        Assertions.assertEquals(Optional.of(contact), contactServiceImpl.findContactById(1));
     }
 
     @Test
     public void findContactByIdNegative() {
-        TelegramBotUpdatesListener telegramBotUpdatesListener = Mockito.mock(TelegramBotUpdatesListener.class);
-        Mockito.when(telegramBotUpdatesListener.findContactById(5)).thenReturn(Optional.of(new Contact(5, "89061877772", "Иванов Иван Иванович")));
-        Assertions.assertEquals(Optional.of(new Contact(5, "89061877772", "Иванов Иван Иванович")), telegramBotUpdatesListener.findContactById(5));
+        ContactServiceImpl contactServiceImpl = Mockito.mock(ContactServiceImpl.class);
+        Mockito.when(contactServiceImpl.findContactById(5)).thenReturn(Optional.of(new Contact(5, "89061877772", "Иванов Иван Иванович")));
+        Assertions.assertEquals(Optional.of(new Contact(5, "89061877772", "Иванов Иван Иванович")),contactServiceImpl.findContactById(5));
 
         ContactRepository contactRepository1 = Mockito.mock(ContactRepository.class);
         Mockito.when(contactRepository1.findContactByNumberPhoneAndName("89061877772", "Иванов Иван Иванович")).
@@ -89,14 +87,14 @@ public class ServiceMethodsForControllerTest {
     @Test
     public void findAllContacts() {
         Mockito.when(contactRepository.save(new Contact(1, "89061877772", "Иванов Иван Иванович"))).thenReturn(new Contact(1, "89061877772", "Иванов Иван Иванович"));
-        Assertions.assertEquals(new Contact(1, "89061877772", "Иванов Иван Иванович"), telegramBotUpdatesListener.addContact(new Contact(1, "89061877772", "Иванов Иван Иванович")));
+        Assertions.assertEquals(new Contact(1, "89061877772", "Иванов Иван Иванович"), contactServiceImpl.addContact(new Contact(1, "89061877772", "Иванов Иван Иванович")));
         Mockito.when(contactRepository.save(new Contact(2, "89061977773", "Петров Петр Петрович"))).thenReturn(new Contact(2, "89061977773", "Петров Петр Петрович"));
-        Assertions.assertEquals(new Contact(2, "89061977773", "Петров Петр Петрович"), telegramBotUpdatesListener.addContact(new Contact(2, "89061977773", "Петров Петр Петрович")));
+        Assertions.assertEquals(new Contact(2, "89061977773", "Петров Петр Петрович"), contactServiceImpl.addContact(new Contact(2, "89061977773", "Петров Петр Петрович")));
         List<Contact> allContacts = List.of(
                 new Contact(1, "89061877772", "Иванов Иван Иванович"),
                 new Contact(2, "89061977773", "Петров Петр Петрович"));
         Mockito.when(contactRepository.findAll()).thenReturn(allContacts);
-        Assertions.assertEquals(allContacts, telegramBotUpdatesListener.getAllContacts());
+        Assertions.assertEquals(allContacts, contactServiceImpl.getAllContacts());
     }
 
 
@@ -113,7 +111,7 @@ public class ServiceMethodsForControllerTest {
         String json = Files.readString(Paths.get("update.json"));
         Update update = BotUtils.parseUpdate(json);
         TelegramBotUpdatesListener telegramBotUpdatesListener1 = Mockito.mock(TelegramBotUpdatesListener.class);
-        telegramBotUpdatesListener1.saveContact(update);
+        // telegramBotUpdatesListener1.safeContact(update);
         telegramBotUpdatesListener1.sendResponseForFirstAndSecondMenu(update);
         telegramBotUpdatesListener1.checkButtonAnswer(update);
         telegramBotUpdatesListener1.sendGreetingMessage(update);
@@ -121,7 +119,7 @@ public class ServiceMethodsForControllerTest {
         telegramBotUpdatesListener1.process(List.of(update));
 
 
-        verify(telegramBotUpdatesListener1).saveContact(update);
+        // verify(telegramBotUpdatesListener1).safeContact(update);
         verify(telegramBotUpdatesListener1).sendResponseForFirstAndSecondMenu(update);
         verify(telegramBotUpdatesListener1).checkButtonAnswer(update);
         verify(telegramBotUpdatesListener1).sendGreetingMessage(update);
@@ -137,26 +135,6 @@ public class ServiceMethodsForControllerTest {
 
     }
 
-    @Test
-    public void process2() throws IOException {
-        String json = Files.readString(Paths.get("update_4_contact.json"));
-        Update update = BotUtils.parseUpdate(json);
-        telegramBotUpdatesListener.saveContact(update);
-        long chatId = update.message().chat().id();
-        verify(telegramBot).execute(new SendMessage(chatId, BotMessageEnum.SAVE_INFORMATION.getMessage()));
-
-    }
-
-
-    @Test
-    void negativeSendMessage() {
-        RestAssured.baseURI = "https://api.telegram.org/5758859832:AAEwJ4cIzXZnXITbJ1CnX1sy1K7WmXW-uhc";
-        given()
-                .param("text", "rest-assured_TEST")
-                .param("chat_id", "362396673")
-                .when()
-                .get("/start")
-                .then()
-                .statusCode(404);
-    }
 }
+
+

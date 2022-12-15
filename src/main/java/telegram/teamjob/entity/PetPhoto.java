@@ -14,10 +14,16 @@ public class PetPhoto {
 
     private String filePath;
     private long fileSize;
-    @ManyToOne
-    @JoinColumn(name = "record_id")
-    private Record record;
+     @ManyToOne
+      @JoinColumn(name = "record_id")
+      private Record record;
 
+    public PetPhoto() {
+    }
+
+    public Long getPetPhotosId() {
+        return petPhotosId;
+    }
 
     public Record getRecord() {
         return record;
@@ -25,13 +31,6 @@ public class PetPhoto {
 
     public void setRecord(Record record) {
         this.record = record;
-    }
-
-
-    public PetPhoto() {}
-
-    public Long getPetPhotosId() {
-        return petPhotosId;
     }
 
     public void setPetPhotosId(Long petPhotosId) {
@@ -59,12 +58,12 @@ public class PetPhoto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PetPhoto petPhoto = (PetPhoto) o;
-        return fileSize == petPhoto.fileSize && Objects.equals(petPhotosId, petPhoto.petPhotosId) && Objects.equals(filePath, petPhoto.filePath) && Objects.equals(record, petPhoto.record);
+        return fileSize == petPhoto.fileSize && Objects.equals(petPhotosId, petPhoto.petPhotosId) && Objects.equals(filePath, petPhoto.filePath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(petPhotosId, filePath, fileSize, record);
+        return Objects.hash(petPhotosId, filePath, fileSize);
     }
 
     @Override

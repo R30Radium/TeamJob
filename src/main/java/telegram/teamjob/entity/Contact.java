@@ -3,6 +3,7 @@ package telegram.teamjob.entity;
 import telegram.teamjob.repositories.ContactRepository;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -22,7 +23,18 @@ public class Contact {
     private String name;
     private String numberPhone;
 
+    private LocalDateTime dateTime;
+
     public Contact(){}
+
+    public LocalDateTime getLocalDateTime() {
+        return dateTime;
+    }
+
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.dateTime = localDateTime;
+    }
+
     public Contact(int id, String numberPhone, String name){
         this.id=id;
         this.numberPhone = numberPhone;
@@ -48,10 +60,22 @@ public class Contact {
     public void setNumberPhone(String numberPhone){
         this.numberPhone = numberPhone;
     }
+ /*public String getTimeForCalling(){
+        return timeForCalling;
+ }
+ public void setTimeForCalling(String timeForCalling){
+        this.timeForCalling=timeForCalling;
+ }
+
+  */
 
     @Override
     public String toString() {
-        return "Contact: " + " id " + id+ " name " + name + " number phone " + numberPhone;
+        return "Контакт пользователя: " +"\n"+
+                " id = " + id + "\n"+
+                " имя  = " + name  + "\n"+
+                " телефон = " + numberPhone  + "\n"+
+                " дата внесения записи = " + dateTime + "; " + "\n";
     }
 
     @Override

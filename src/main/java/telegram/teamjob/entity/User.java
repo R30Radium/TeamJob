@@ -16,7 +16,9 @@ public class User {
     private long chatId;
     private String petName;
 
-    public User(){}
+    public User(){
+
+    }
 
     public User(Long userId, String userName, String numberPhone, long chatId, String petName, Record userRecord) {
         this.userId = userId;
@@ -92,4 +94,3 @@ public class User {
                 '}';
     }
 }
-

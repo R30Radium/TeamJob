@@ -16,14 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import telegram.teamjob.Service.PetPhotoServiceImpl;
-import telegram.teamjob.Service.RecordServiceImpl;
-import telegram.teamjob.Service.TelegramBotUpdatesListener;
-import telegram.teamjob.constants.BotMessageEnum;
-import telegram.teamjob.entity.PetPhoto;
+import telegram.teamjob.entity.*;
 import telegram.teamjob.entity.Record;
-import telegram.teamjob.entity.Shelter;
-import telegram.teamjob.entity.User;
+import telegram.teamjob.implementation.PetPhotoServiceImpl;
+import telegram.teamjob.implementation.RecordServiceImpl;
+import telegram.teamjob.implementation.TelegramBotUpdatesListener;
+import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.repositories.*;
 
 import java.io.IOException;
@@ -36,7 +34,7 @@ import java.util.regex.Matcher;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static telegram.teamjob.Service.TelegramBotUpdatesListener.PATTERN;
+import static telegram.teamjob.implementation.TelegramBotUpdatesListener.PATTERN;
 import static telegram.teamjob.implementation.TestUtils.*;
 
 
@@ -98,7 +96,7 @@ public class BaseIntegrationTest {
         verify(telegramBot).execute(sentMessage.capture());
 
         assertEquals(createRecordAnswer.message().chat().id(), sentMessage.getValue().getParameters().get("chat_id"));
-        assertEquals(BotMessageEnum.DAILY_RECORD_INFO.getMessage()
+        assertEquals(BotMessageEnum.START_MESSAGE.getMessage()
                 , sentMessage.getValue().getParameters().get("text"));
     }
 
@@ -126,10 +124,10 @@ public class BaseIntegrationTest {
         testUserCreation();
         User user = userRepository.findByChatId(-23123123123123L);
         Record record = new Record();
-        record.setUser(user);
+
         record.setDateTime(localDateTime);
         record.setChatId(-23123123123123L);
-        record.setLifeRecord("Test");
+
 
         recordRepository.save(record);
         telegramBotUpdatesListener.process(List.of(photoUpload));
@@ -152,13 +150,21 @@ public class BaseIntegrationTest {
     public void testResponseFirstAndSecondMenu(String callbacks, String answer) throws IOException, URISyntaxException {
         TelegramBot tgBot = Mockito.mock(TelegramBot.class);
         TelegramBotUpdatesListener telegramBotUpdatesListener = new TelegramBotUpdatesListener(
+                Mockito.mock(UserRepository.class),
+                Mockito.mock(RecordRepository.class),
+                Mockito.mock(PetPhotoRepository.class),
                 tgBot,
                 Mockito.mock(ShelterRepository.class),
                 Mockito.mock(ContactRepository.class),
-                Mockito.mock(UserRepository.class),
                 Mockito.mock(InformationForOwnerRepository.class),
+                Mockito.mock(UserServiceImpl.class),
                 Mockito.mock(RecordServiceImpl.class),
-                Mockito.mock(PetPhotoServiceImpl.class)
+                Mockito.mock(PetPhotoServiceImpl.class),
+                Mockito.mock(VolunteerRepository.class),
+                Mockito.mock(VolunteerServiceImpl.class),
+                Mockito.mock(ContactServiceImpl.class),
+                Mockito.mock(ReportServiceImpl.class),
+                Mockito.mock(ShelterServiceImpl.class)
         );
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
