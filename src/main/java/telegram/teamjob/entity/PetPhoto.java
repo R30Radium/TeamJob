@@ -25,16 +25,8 @@ public class PetPhoto {
         return petPhotosId;
     }
 
-    // public Record getRecord() {
-    //      return record;
-    //  }
-
-    //  public void setRecord(Record record) {
-    //      this.record = record;
-    //  }
-
-
-    public PetPhoto() {
+    public Record getRecord() {
+        return record;
     }
 
     public void setRecord(Record record) {

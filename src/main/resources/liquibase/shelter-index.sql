@@ -69,6 +69,8 @@ CREATE TABLE records
 CREATE TABLE petPhotos
 (
     pet_Photos_id BIGSERIAL NOT NULL PRIMARY KEY,
+    record_id   BIGSERIAL,
+    FOREIGN KEY (record_id) REFERENCES records (record_id),
     file_path   TEXT      NOT NULL,
     file_size   BIGINT    NOT NULL
 );

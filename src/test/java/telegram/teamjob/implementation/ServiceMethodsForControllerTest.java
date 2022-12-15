@@ -51,8 +51,6 @@ public class ServiceMethodsForControllerTest {
     @InjectMocks
     private ContactServiceImpl contactServiceImpl;
     @InjectMocks
-    private ContactServiceImpl contactServiceImpl;
-    @InjectMocks
     private TelegramBotUpdatesListener telegramBotUpdatesListener;
 
     public ServiceMethodsForControllerTest(){};

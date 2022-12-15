@@ -82,6 +82,7 @@ public class UserServiceImpl {
     //      logger.info("Creating new User");
     //     return userRepository.save(getStringUser(update));
     //  }
+
     public User getUser(Long chatId) {
         return userRepository.findByChatId(chatId);
     }

@@ -136,6 +136,7 @@ public class TelegramBotUpdateListenerTest {
 
     @Test
     public void sendResponseForThirdMenu2Test() throws IOException {
+
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson("photo");

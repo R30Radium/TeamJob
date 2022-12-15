@@ -2,8 +2,6 @@ package telegram.teamjob.entity;
 
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -23,13 +21,6 @@ public class User {
     }
 
     public User(Long userId, String userName, String numberPhone, long chatId, String petName, Record userRecord) {
-        this.userId = userId;
-        this.userName = userName;
-        this.numberPhone = numberPhone;
-        this.chatId = chatId;
-        this.petName = petName;
-    }
-    public User(Long userId, String userName, String numberPhone, long chatId, String petName) {
         this.userId = userId;
         this.userName = userName;
         this.numberPhone = numberPhone;
