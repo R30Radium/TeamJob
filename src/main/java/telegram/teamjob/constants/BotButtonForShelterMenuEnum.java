@@ -16,9 +16,9 @@ public enum BotButtonForShelterMenuEnum {
     COMMAND_SAFETY_SHELTER("Правила поведения в приюте"),
 
     COMMAND_LEAVE_DATA_FOR_COMMUNICATION("Оставить данные для связи"),
-    COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION("\n" + "Если Вы хотите оставить свои КОНТАКТНЫЕ ДАННЫЕ для связи, " +
+    COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION("Если Вы хотите оставить свои КОНТАКТНЫЕ ДАННЫЕ для связи, " +
             "введите их строго в соотвествии с шаблоном: "
-            + "\n" +  "89061877772 Иванов Иван Иванович\n"),
+            + "\n" +  "89061877772 Иванов Иван Иванович"),
 
     COMMAND_CREATE_USER_("\n" + "Если Вы хотите оставить свои КОНТАКТНЫЕ ДАННЫЕ для связи, " +
             "введите их строго в соотвествии с шаблоном: "

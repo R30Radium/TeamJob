@@ -27,7 +27,7 @@ import static telegram.teamjob.constants.BotMessageEnum.SAVE_INFORMATION;
 public class UserServiceImplTest {
 
     @Test
-    public void  saveRecordTest() throws IOException {
+    public void  saveUserTest() throws IOException {
         TelegramBot tgBot = Mockito.mock(TelegramBot.class);
         UserServiceImpl userService = new UserServiceImpl(
                 tgBot,
@@ -35,7 +35,7 @@ public class UserServiceImplTest {
         );
         userService = Mockito.spy(userService);
 
-        String info = replacedJson2("Шарик(пес) 89061877772 Иванов Иван Иванович ");
+        String info = replacedJson2("89061877772 Иванов Иван Иванович ");
         Update update = BotUtils.parseUpdate(info);
         userService.createUser(update);
         verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual->{
