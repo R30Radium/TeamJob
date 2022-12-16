@@ -143,11 +143,17 @@ public class TelegramBotUpdateListenerTest {
         Update update = BotUtils.parseUpdate(info);
         long chatId = update.callbackQuery().message().chat().id();
         telegramBotUpdatesListener.sendResponseForThirdMenu(update);
-        verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual -> {
-            Map<String, Object> parameters = actual.getParameters();
-            return Objects.equals(parameters.get("chat_id"), chatId)
-                    && Objects.equals(parameters.get("data"), PHOTO.getMessage());
-        }));
+//        verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual -> {
+//            Map<String, Object> parameters = actual.getParameters();
+//            return Objects.equals(parameters.get("chat_id"), chatId)
+//                    && Objects.equals(parameters.get("data"), PHOTO.getMessage());
+//        }));
+        ArgumentCaptor<SendMessage> actual = ArgumentCaptor.forClass(SendMessage.class); // объект для захвата аргумента
+        verify(tgBot).execute(actual.capture()); // проверяем, что вызвался метод и говорим, чтобы аргумен захватился
+
+        Map<String, Object> parameters = actual.getValue().getParameters(); // достаём из захваченного аргумента параметр и проверяем
+        Assertions.assertThat(parameters.get("chat_id")).isEqualTo(chatId);
+        Assertions.assertThat(parameters.get("text")).isEqualTo(PHOTO.getMessage());
 
     }
 }

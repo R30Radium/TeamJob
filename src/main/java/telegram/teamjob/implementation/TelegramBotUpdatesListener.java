@@ -187,6 +187,8 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     telegramBot.execute(sendMessage(update.message().chat().id(), "Сперва необходимо отправить отчёт\n" +
                             BotMessageEnum.DAILY_RECORD_INFO));
                 }
+            } else {
+                logger.info("Фото не добавлено");
             }
         } else {
             logger.info("Processing update: {}", update);
@@ -233,8 +235,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     logger.info("User не внесён в БД - users");
                     telegramBot.execute(sendMessage(chatId, USER_NOT_FOUND_MESSAGE.getMessage()));
                 }
-            }
-            else if (inputText.contains("/record")) {
+            } else if (inputText.contains("/record")) {
                 logger.info("Отправил инфомарцию об отчете");
                 String messageForRecords = BotMessageEnum.DAILY_RECORD_INFO.getMessage();
                 telegramBot.execute(sendMessage(chatId, messageForRecords));
@@ -244,8 +245,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     logger.info("Контакта нет в списке");
                     String needUser = USER_NOT_FOUND_MESSAGE.getMessage();
                     telegramBot.execute(sendMessage(chatId, needUser));
+                } else {
+                    recordService.saveRecord(update);
                 }
-                recordService.saveRecord(update);
             } else if (inputText.contains(DELETE_COMMAND.getMessage()))
                 contactService.deleteAllContacts(update);
         } else {

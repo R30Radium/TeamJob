@@ -10,12 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import telegram.teamjob.TeamJobApplication;
 import telegram.teamjob.entity.*;
 import telegram.teamjob.entity.Record;
 import telegram.teamjob.implementation.PetPhotoServiceImpl;
@@ -29,6 +31,7 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -96,7 +99,7 @@ public class BaseIntegrationTest {
         verify(telegramBot).execute(sentMessage.capture());
 
         assertEquals(createRecordAnswer.message().chat().id(), sentMessage.getValue().getParameters().get("chat_id"));
-        assertEquals(BotMessageEnum.START_MESSAGE.getMessage()
+        assertEquals(BotMessageEnum.DAILY_RECORD_INFO.getMessage()
                 , sentMessage.getValue().getParameters().get("text"));
     }
 
@@ -120,19 +123,24 @@ public class BaseIntegrationTest {
     @Test
     public void testPhotoUpload() {
         LocalDateTime localDateTime = LocalDateTime.now();
-        cleanup();//Не работает анотация BeforeEach
-        testUserCreation();
-        User user = userRepository.findByChatId(-23123123123123L);
+        User user = new User();
+        user.setChatId(photoUpload.message().chat().id());
+        user.setUserName("testPerson");
+        user.setNumberPhone("880055533355");
+        userRepository.save(user);
         Record record = new Record();
-
+        record.setChatId(photoUpload.message().chat().id());
         record.setDateTime(localDateTime);
-        record.setChatId(-23123123123123L);
+        record.setDiet("TestTestTestTest");
+        record.setAdaptation("TestTestTestTest");
+        record.setChangeInBehavior("TestTestTestTest");
+        recordRepository.save(record);
 
-
+        userRepository.save(user);
         recordRepository.save(record);
         telegramBotUpdatesListener.process(List.of(photoUpload));
-
         PhotoSize[] photoSizes = photoUpload.message().photo();
+
         Iterable<PetPhoto> photoList = petPhotoRepository.findAll();
         PetPhoto petPhoto = photoList.iterator().next();
         String[] path = petPhoto.getFilePath().split("\\.");
