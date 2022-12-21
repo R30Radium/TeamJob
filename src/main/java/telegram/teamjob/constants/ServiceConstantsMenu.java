@@ -16,7 +16,7 @@ public enum ServiceConstantsMenu {
     COMMAND_DRIVING_DIRECTIONS("Схема проезда"),
     COMMAND_SAFETY_SHELTER("Правила поведения в приюте"),
     COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION("Если Вы хотите оставить свои КОНТАКТНЫЕ ДАННЫЕ для связи, введите их строго в соотвествии с шаблоном: "
-            + "\n" +  "89061877772 Иванов Иван Иванович"),
+            + "\n" +  "89061855572 Иванов Иван Иванович"),
     COMMAND_CALL_VOLUNTEER("\n"+ "Связаться с волонтером");
     private final String text;
 

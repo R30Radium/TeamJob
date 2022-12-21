@@ -27,7 +27,7 @@ public enum BotButtonEnum {
 
     BUTTON_ADD_USER( " Добавить усыновителя "),
     BUTTON_CHECK_REPORTS( " Проверить отчеты "),
-    BUTTON_SEND_WARNING_ABOUT_BED_REPORT( " Сообщить о плохо заполняемом отчете "),
+    BUTTON_BED_REPORT( " Сообщить о плохо заполняемом отчете "),
     BUTTON_MAKE_DECISION_ON_PROBATION( " Принять решение об испытательном сроке ");
 
     private final String message;

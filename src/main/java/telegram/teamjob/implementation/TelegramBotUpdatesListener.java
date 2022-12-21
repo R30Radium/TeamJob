@@ -24,12 +24,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.regex.Pattern;
 
 
 import static telegram.teamjob.constants.BotButtonEnum.*;
 import static telegram.teamjob.constants.BotMessageEnum.*;
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.*;
+import static telegram.teamjob.constants.Cat.TextForResponseFromMenuButtonsDog.RULES_FOR_DATING_DOG;
 
 /**
  * @author shulga_ea <br>
@@ -73,9 +73,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
      * @see Contact
      */
     static public final String CONTACT_TEXT_PATTERN = "([0-9]{11})(\\s)([\\W+]+)";
-    static public final Pattern PATTERN = Pattern.compile(CONTACT_TEXT_PATTERN);
+    //static public final Pattern PATTERN = Pattern.compile(CONTACT_TEXT_PATTERN);
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
-    static private final String exampleContact = "89061877772 Иванов Иван Иванович";
+    static private final String exampleContact = "89061875572 Иванов Иван Иванович";
 
     public TelegramBotUpdatesListener(UserRepository userRepository, RecordRepository recordRepository,
                                       PetPhotoRepository petPhotoRepository, TelegramBot telegramBot,
@@ -360,7 +360,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
         long chatId = update.callbackQuery().message().chat().id();
         int messageId = update.callbackQuery().message().messageId();
         logger.info("Ответ от кнопки " + answerMenu);
-        List<Shelter> shelters = shelterRepository.findAll();
+       // List<Shelter> shelters = shelterRepository.findAll();
         List<InformationForOwner> info = informationForOwnerRepository.findAll();
         switch (answerMenu) {
             case "info":
@@ -429,7 +429,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 try {
 //                        String information = infoOwner.getRules();
                     String information = "Забери 2 собаки";
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
+                    EditMessageText answer = new EditMessageText(chatId, messageId,  RULES_FOR_DATING_DOG.getMessage());
                     logger.warn("IMPORTANT" + information);
                     telegramBot.execute(answer);
                 } catch (NullPointerException e) {
