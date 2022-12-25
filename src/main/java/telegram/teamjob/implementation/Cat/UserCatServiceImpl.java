@@ -7,9 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import telegram.teamjob.entity.Cat.UserCat;
-import telegram.teamjob.entity.User;
 import telegram.teamjob.repositories.Cat.UserCatRepository;
-import telegram.teamjob.repositories.UserRepository;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -85,6 +83,10 @@ public class UserCatServiceImpl {
     //      logger.info("Creating new User");
     //     return userRepository.save(getStringUser(update));
     //  }
+
+    public List<UserCat> findUsers(Long chatId) {
+        return userCatRepository.findAllUserCatByChatId(chatId);
+    }
 
     public UserCat getUserCat(Long chatId) {
         return userCatRepository.findByChatId(chatId);

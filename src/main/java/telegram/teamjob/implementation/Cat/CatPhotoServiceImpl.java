@@ -7,6 +7,7 @@ import com.pengrad.telegrambot.model.PhotoSize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import telegram.teamjob.Service.Cat.CatPhotoService;
 import telegram.teamjob.entity.Cat.CatPhoto;
 import telegram.teamjob.entity.Cat.RecordCat;
@@ -21,7 +22,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
-
+@Service
 public class CatPhotoServiceImpl implements CatPhotoService {
     Logger logger = LoggerFactory.getLogger(CatPhotoServiceImpl.class);
 

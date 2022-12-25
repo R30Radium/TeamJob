@@ -11,6 +11,7 @@ import telegram.teamjob.Service.ShelterService;
 
 import static telegram.teamjob.constants.BotButtonEnum.*;
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.*;
+import static telegram.teamjob.constants.Cat.BotButtonForCat.*;
 
 @Service
 public class ShelterServiceImpl implements ShelterService {
@@ -27,12 +28,12 @@ public class ShelterServiceImpl implements ShelterService {
     public InlineKeyboardMarkup ourMenuButtons() {
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         var button1Info = new InlineKeyboardButton(BUTTON_INFO.getMessage());
-        var button2Instruction = new InlineKeyboardButton(BUTTON_INSTRUCTION.getMessage());
+        var button2Instruction = new InlineKeyboardButton(BUTTON_INSTRUCTION_DOG.getMessage());
         var button3Record = new InlineKeyboardButton(BUTTON_RECORD.getMessage());
         var button4Help = new InlineKeyboardButton(BUTTON_HELP.getMessage());
 
         button1Info.callbackData(BUTTON_INFO.getMessage());
-        button2Instruction.callbackData(BUTTON_INSTRUCTION.getMessage());
+        button2Instruction.callbackData(BUTTON_INSTRUCTION_DOG.getMessage());
         button3Record.callbackData(BUTTON_RECORD.getMessage());
         button4Help.callbackData(BUTTON_HELP.getMessage());
 
@@ -116,6 +117,32 @@ public class ShelterServiceImpl implements ShelterService {
         markup.addRow(button11Volunteer);
         return markup;
     }
+
+    public InlineKeyboardMarkup ourMenuCatButtons() {
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        var button1Info = new InlineKeyboardButton(BUTTON_INFO.getMessage());
+        var button2Instruction = new InlineKeyboardButton(BUTTON_INSTRUCTION_CAT.getMessage());
+        var button3Record = new InlineKeyboardButton(BUTTON_RECORD.getMessage());
+        var button4Help = new InlineKeyboardButton(BUTTON_HELP.getMessage());
+
+        button1Info.callbackData(BUTTON_INFO.getMessage());
+        button2Instruction.callbackData(BUTTON_INSTRUCTION_CAT.getMessage());
+        button3Record.callbackData(BUTTON_RECORD.getMessage());
+        button4Help.callbackData(BUTTON_HELP.getMessage());
+
+        /* Данные кнопки будут располагаться друг под другом. Можно использоваться в линию
+           для этого необходимые кнопки можно перечислить в параметрах markup.addRow(b1, b2, b3, b4);
+           Тогда информация будет сжата по размеру кнопки
+        */
+        markup.addRow(button1Info);
+        markup.addRow(button2Instruction);
+        markup.addRow(button3Record);
+        markup.addRow(button4Help);
+        logger.info("Меню отправлено");
+        return markup;
+    }
+
+
 
 
 

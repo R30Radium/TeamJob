@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: liquibase/shelter-index.sql
+  - include:
+      file: liquibase/user-status.sql

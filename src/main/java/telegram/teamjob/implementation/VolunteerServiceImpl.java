@@ -33,6 +33,7 @@ public class VolunteerServiceImpl implements VolunteerService {
 
     @Override
     public InlineKeyboardMarkup userStatusMenuButtons() {
+        logger.info("Кнопки статуса Пользователя");
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
         var buttonGuest = new InlineKeyboardButton(BUTTON_GUEST.getMessage());
         var buttonEmployee = new InlineKeyboardButton(BUTTON_EMPLOYEE.getMessage());
@@ -44,6 +45,21 @@ public class VolunteerServiceImpl implements VolunteerService {
         markup.addRow(buttonEmployee);
         return markup;
     }
+
+    public InlineKeyboardMarkup shelterStatusMenuButtons() {
+        logger.info("Кнопки выбора приюта");
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        var buttonCatShelter = new InlineKeyboardButton(BUTTON_CAT_SHELTER.getMessage());
+        var buttonDogShelter = new InlineKeyboardButton(BUTTON_DOG_SHELTER.getMessage());
+
+        buttonCatShelter.callbackData(BUTTON_CAT_SHELTER.getMessage());
+        buttonDogShelter.callbackData(BUTTON_DOG_SHELTER.getMessage());
+
+        markup.addRow(buttonCatShelter);
+        markup.addRow(buttonDogShelter);
+        return markup;
+    }
+
 
     @Override
     public InlineKeyboardMarkup menuForVolunteer() {

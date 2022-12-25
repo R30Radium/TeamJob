@@ -10,19 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
-import telegram.teamjob.TeamJobApplication;
 import telegram.teamjob.entity.*;
 import telegram.teamjob.entity.Record;
-import telegram.teamjob.implementation.PetPhotoServiceImpl;
-import telegram.teamjob.implementation.RecordServiceImpl;
-import telegram.teamjob.implementation.TelegramBotUpdatesListener;
 import telegram.teamjob.constants.BotMessageEnum;
 import telegram.teamjob.repositories.*;
 
@@ -31,7 +26,6 @@ import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -172,8 +166,8 @@ public class BaseIntegrationTest {
                 Mockito.mock(VolunteerServiceImpl.class),
                 Mockito.mock(ContactServiceImpl.class),
                 Mockito.mock(ReportServiceImpl.class),
-                Mockito.mock(ShelterServiceImpl.class)
-        );
+                Mockito.mock(ShelterServiceImpl.class),
+                clientService);
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson(callbacks);

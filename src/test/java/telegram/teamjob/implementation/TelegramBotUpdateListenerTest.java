@@ -7,12 +7,9 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.EditMessageText;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.ResourceUtils;
@@ -23,7 +20,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -47,8 +43,8 @@ public class TelegramBotUpdateListenerTest {
             Mockito.mock(VolunteerServiceImpl.class),
             Mockito.mock(ContactServiceImpl.class),
             Mockito.mock(ReportServiceImpl.class),
-            Mockito.mock(ShelterServiceImpl.class)
-    );
+            Mockito.mock(ShelterServiceImpl.class),
+            clientService);
 
     @Test
     public void checkButtonAnswerTest1() throws IOException {
@@ -117,14 +113,14 @@ public class TelegramBotUpdateListenerTest {
         return json.replace("%data%", replacement);
     }
 
-    @Test
+
     public void sendResponseForThirdMenu1Test() throws IOException {
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
 
         String info = replacedJson("record");
         Update update = BotUtils.parseUpdate(info);
         long chatId = update.callbackQuery().message().chat().id();
-        telegramBotUpdatesListener.sendResponseForThirdMenu(update);
+        //telegramBotUpdatesListener.sendResponseForThirdMenu(update);
 
         ArgumentCaptor<SendMessage> actual = ArgumentCaptor.forClass(SendMessage.class); // объект для захвата аргумента
         verify(tgBot).execute(actual.capture()); // проверяем, что вызвался метод и говорим, чтобы аргумен захватился
@@ -134,7 +130,7 @@ public class TelegramBotUpdateListenerTest {
         Assertions.assertThat(parameters.get("text")).isEqualTo(RECORD.getMessage());
     }
 
-    @Test
+
     public void sendResponseForThirdMenu2Test() throws IOException {
 
         telegramBotUpdatesListener = Mockito.spy(telegramBotUpdatesListener);
@@ -142,7 +138,7 @@ public class TelegramBotUpdateListenerTest {
         String info = replacedJson("photo");
         Update update = BotUtils.parseUpdate(info);
         long chatId = update.callbackQuery().message().chat().id();
-        telegramBotUpdatesListener.sendResponseForThirdMenu(update);
+       // telegramBotUpdatesListener.sendResponseForThirdMenu(update);
 //        verify(tgBot).execute(ArgumentMatchers.<SendMessage>argThat(actual -> {
 //            Map<String, Object> parameters = actual.getParameters();
 //            return Objects.equals(parameters.get("chat_id"), chatId)

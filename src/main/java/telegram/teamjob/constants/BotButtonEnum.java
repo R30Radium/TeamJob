@@ -6,9 +6,11 @@ public enum BotButtonEnum {
     BUTTON_GUEST("Пользователь"),
     BUTTON_EMPLOYEE("Волонтер"),
     BUTTON_INFO("Узнать информацию о приюте"),
-    BUTTON_INSTRUCTION("Как взять собаку из приюта"),
+    BUTTON_INSTRUCTION_DOG("Как взять собаку из приюта"),
     BUTTON_RECORD("Прислать отчет о питомце"),
     BUTTON_HELP("Позвать волонтера"),
+    BUTTON_CAT_SHELTER("Приют для кошек"),
+    BUTTON_DOG_SHELTER("Приют для собак"),
 
 
     BUTTON_KNOW (" Правила знакомства с животным "),
