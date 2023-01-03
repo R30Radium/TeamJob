@@ -94,7 +94,7 @@ public class ShelterServiceImpl implements ShelterService {
 
         button1Rules.callbackData("rules");
         button2Docs.callbackData("docs");
-        button3Transportation.callbackData("transpartation");
+        button3Transportation.callbackData("transportation");
         button4ArrangementPuppy.callbackData("arrangementPuppy");
         button5ArrangementDog.callbackData("arrangementDog");
         button6ArrangementDogInvalid.callbackData("arrangementDogInvalid");

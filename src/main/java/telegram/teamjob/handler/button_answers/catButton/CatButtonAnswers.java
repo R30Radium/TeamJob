@@ -64,139 +64,78 @@ public class CatButtonAnswers {
         int messageId = update.callbackQuery().message().messageId();
         logger.info("Ответ от кнопки " + answerMenu);
         switch (answerMenu) {
-            case "info":
-                logger.info("case");
-                try {
-                    logger.info("try case 1");
-                    String information = "Информация о приюте";
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
+            case "infoCat":
+                    EditMessageText answer = new EditMessageText(chatId, messageId, INFORMATION_ABOUT_SHELTER_CAT.getMessage());
+                    logger.warn("information about shelter");
                     telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
                 break;
-            case "workTime":
-                try {
-                    String workSchedule = "24/7 без перерывов";
-                    EditMessageText answer = new EditMessageText(chatId, messageId, workSchedule);
-                    logger.warn("IMPORTANT" + workSchedule);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+            case "workTimeCat":
+                    EditMessageText answer2 = new EditMessageText(chatId, messageId, WORK_TIME_SHELTER_CAT.getMessage());
+                    logger.warn("work time shelter");
+                    telegramBot.execute(answer2);
                 break;
-            case "address":
-                try {
-                    String address = "Улица чертовых тестов";
-                    EditMessageText answer = new EditMessageText(chatId, messageId, address);
-                    logger.warn("IMPORTANT" + address);
-                    telegramBot.execute(answer);
-                } catch (Exception e) {
-                    logger.warn("Ошибка в кейсе address: " + e);
-                }
+            case "addressCat":
+                    EditMessageText answer3 = new EditMessageText(chatId, messageId,  ADDRESS_SHELTER_CAT.getMessage());
+                    logger.warn("address shelter");
+                    telegramBot.execute(answer3);
                 break;
-            case "way":
-                try {
-                    String way = "Путь через боль";
-                    EditMessageText answer = new EditMessageText(chatId, messageId, way);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+            case "wayCat":
+                    EditMessageText answer4= new EditMessageText(chatId, messageId, WAY_SHELTER_CAT.getMessage());
+                    logger.warn("way shelter");
+                    telegramBot.execute(answer4);
                 break;
-            case "safety":
-                try {
-                    String safety = "тестовый ответ";
-                    EditMessageText answer = new EditMessageText(chatId, messageId, safety);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+            case"securityContactCat":
+                        EditMessageText answer5 = new EditMessageText(chatId, messageId, SECURITY_CONTACT_CAT.getMessage());
+                        logger.warn("security contact cat");
+                        telegramBot.execute(answer5);
                 break;
-            case "volunteer":
+            case "safetyCat":
+                    EditMessageText answer6 = new EditMessageText(chatId, messageId, SAFETY_CAT.getMessage());
+                    logger.warn("safety cat");
+                    telegramBot.execute(answer6);
+                break;
+            case "volunteerCat":
                 telegramBot.execute(new EditMessageText(chatId, messageId, "Спасибо за обращение, волонтер приюта свяжется " +
                         "с Вами"));
                 break;
-            case "contact":
+            case "contactCat":
                 telegramBot.execute(new EditMessageText(chatId, messageId, COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION.getText()));
                 break;
-            case "rules":
-                try {
-                    String information = RULES_FOR_DATING_CAT.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId,  RULES_FOR_DATING_CAT.getMessage());
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 1 работает");
+            case "rulesCat": //второе меню - как взять кошку из приюта
+                    EditMessageText answer7 = new EditMessageText(chatId, messageId,  RULES_FOR_DATING_CAT.getMessage());
+                    logger.warn("IMPORTANT rules cat");
+                    telegramBot.execute(answer7);
                 break;
-            case "docs":
-                try {
-                    String information = LIST_DOCUMENTS_FOR_CAT.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 2 работает");
+            case "docsCat":
+                    EditMessageText answer8 = new EditMessageText(chatId, messageId, LIST_DOCUMENTS_FOR_CAT.getMessage());
+                    logger.warn("IMPORTANT documents for cat");
+                    telegramBot.execute(answer8);
                 break;
-            case "transportation":
-                try {
-                    String information = RECOMMENDATIONS_FOR_TRANSPORTATION.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+            case "transportationCat":
+                    EditMessageText answer9 = new EditMessageText(chatId, messageId,RECOMMENDATIONS_FOR_TRANSPORTATION.getMessage() );
+                    logger.warn("IMPORTANT transportation cat");
+                    telegramBot.execute(answer9);
                 logger.info("Кнопка 3 работает");
                 break;
             case "arrangementKitty":
-                try {
-                    String information = RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_FOR_KITTEN.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 4 работает");
+                    EditMessageText answer10 = new EditMessageText(chatId, messageId, RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_FOR_KITTEN.getMessage());
+                    logger.warn("IMPORTANT arrangement kitty");
+                    telegramBot.execute(answer10);
                 break;
             case "arrangementCat":
-                try {
-                    String information = RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_FOR_ADULT_CAT.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 5 работает");
+                    EditMessageText answer11 = new EditMessageText(chatId, messageId, RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_FOR_ADULT_CAT.getMessage());
+                    logger.warn("IMPORTANT arrangement cat");
+                    telegramBot.execute(answer11);
                 break;
             case "arrangementCatDisabled":
-                try {
-                    String information = RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_DISABLED_CAT.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 6 работает");
+                    EditMessageText answer12 = new EditMessageText(chatId, messageId, RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_DISABLED_CAT.getMessage());
+                    logger.warn("IMPORTANT arrangement cat disabled");
+                    telegramBot.execute(answer12);
                 break;
-            case "reject":
-                try {
-                    String information = REASONS_FOR_REFUSAL_CAT.getMessage();
-                    EditMessageText answer = new EditMessageText(chatId, messageId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 9 работает");
+            case "rejectCat":
+                    EditMessageText answer13 = new EditMessageText(chatId, messageId, REASONS_FOR_REFUSAL_CAT.getMessage());
+                    logger.warn("IMPORTANT reject cat");
+                    telegramBot.execute(answer13);
                 break;
         }
     }

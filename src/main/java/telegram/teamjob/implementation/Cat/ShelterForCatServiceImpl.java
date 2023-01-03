@@ -67,7 +67,7 @@ public class ShelterForCatServiceImpl implements ShelterForCatService {
         buttonWorkTime.callbackData("workTimeCat");
         buttonAddress.callbackData("addressCat");
         buttonWay.callbackData("wayCat");
-        buttonSecurityContact.callbackData("SecurityContactCat");
+        buttonSecurityContact.callbackData("securityContactCat");
         buttonSafety.callbackData("safetyCat");
         buttonContact.callbackData("contactCat");
         buttonVolunteer.callbackData("volunteerCat");
@@ -98,10 +98,10 @@ public class ShelterForCatServiceImpl implements ShelterForCatService {
 
         button1Rules.callbackData("rulesCat");
         button2Docs.callbackData("docsCat");
-        button3Transportation.callbackData("transpartationCat");
+        button3Transportation.callbackData("transportationCat");
         button4ArrangementKitty.callbackData("arrangementKitty");
         button5ArrangementCat.callbackData("arrangementCat");
-        button6ArrangementCatInvalid.callbackData("arrangementCatInvalid");
+        button6ArrangementCatInvalid.callbackData("arrangementCatDisabled");
         button7Reject.callbackData("rejectCat");
         button8Contact.callbackData("contactCat");
         button9Volunteer.callbackData("volunteerCat");

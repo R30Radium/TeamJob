@@ -16,7 +16,7 @@ import java.util.List;
 
 import static telegram.teamjob.constants.BotButtonForShelterMenuEnum.COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION;
 import static telegram.teamjob.constants.BotMessageEnum.*;
-import static telegram.teamjob.constants.Cat.TextForResponseFromMenuButtonsDog.RULES_FOR_DATING_DOG;
+import static telegram.teamjob.constants.Cat.TextForResponseFromMenuButtonsDog.*;
 
 @Service
 public class DogButtonAnswers {
@@ -76,166 +76,87 @@ public class DogButtonAnswers {
         List<InformationForOwner> info = informationForOwnerRepository.findAll();
         switch (answerMenu) {
             case "info":
-                logger.info("case");
-                try {
-                    logger.info("try case 1");
-                    String information = "Информация о приюте";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
+                    SendMessage answer = new SendMessage(chatId, INFORMATION_ABOUT_SHELTER_DOG.getMessage());
+                    logger.warn("IMPORTANT information about shelter dog");
                     telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
                 break;
             case "workTime":
-                try {
 //                        String workSchedule = shelter.getWorkScheduleShelter();
-                    String workSchedule = "24/7 без перерывов";
-                    SendMessage answer = new SendMessage(chatId, workSchedule);
-                    logger.warn("IMPORTANT" + workSchedule);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+                    SendMessage answer2 = new SendMessage(chatId, WORK_TIME_SHELTER_DOG.getMessage());
+                    logger.warn("IMPORTANT work time shelter dog");
+                    telegramBot.execute(answer2);
                 break;
             case "address":
-                try {
 //                    String address = shelter.getAddressShelter();
-                    String address = "Улица чертовых тестов";
-                    SendMessage answer = new SendMessage(chatId, address);
-                    logger.warn("IMPORTANT" + address);
-                    telegramBot.execute(answer);
-                } catch (Exception e) {
-                    logger.warn("Ошибка в кейсе address: " + e);
-                }
+                    SendMessage answer3 = new SendMessage(chatId, ADDRESS_SHELTER_DOG.getMessage());
+                    logger.warn("IMPORTANT  address shelter dog");
+                    telegramBot.execute(answer3);
                 break;
             case "way":
-                try {
+
 //                        String way = shelter.getDrivingDirectionsShelter();
-                    String way = "Путь через боль";
-                    SendMessage answer = new SendMessage(chatId, way);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+                    SendMessage answer4 = new SendMessage(chatId,  WAY_SHELTER_DOG.getMessage());
+                    logger.warn("IMPORTANT way shelter");
+                    telegramBot.execute(answer4);
                 break;
             case "safety":
-                try {
 //                        String safety = shelter.getSafetyAtShelter();
-                    String safety = "тестовый ответ";
-                    SendMessage answer = new SendMessage(chatId, safety);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
+                    SendMessage answer5 = new SendMessage(chatId,SAFETY_DOG.getMessage());
+                    logger.warn("IMPORTANT safety shelter");
+                    telegramBot.execute(answer5);
                 break;
             case "volunteer":
-                telegramBot.execute(new SendMessage(chatId, "Спасибо за обращение, волонтер приюта свяжется " +
-                        "с Вами"));
+                telegramBot.execute(new SendMessage(chatId,  ASK_HELP.getMessage()));
                 break;
             case "contact":
                 telegramBot.execute(new SendMessage(chatId, COMMAND_SAFE_CONTACT_DETAILS_FOR_COMMUNICATION.getText()));
                 break;
             case "rules":
-                try {
 //                        String information = infoOwner.getRules();
-                    String information = "Забери 2 собаки";
-                    SendMessage answer = new SendMessage(chatId,  RULES_FOR_DATING_DOG.getMessage());
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 1 работает");
+                    SendMessage answer6 = new SendMessage(chatId,  RULES_FOR_DATING_DOG.getMessage());
+                    logger.warn("IMPORTANT rules");
+                    telegramBot.execute(answer6);
                 break;
             case "docs":
-                try {
-                    String information = "Документы";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 2 работает");
+                    SendMessage answer7 = new SendMessage(chatId, LIST_DOCUMENTS_FOR_DOG.getMessage());
+                    logger.warn("IMPORTANT about documents");
+                    telegramBot.execute(answer7);
                 break;
             case "transportation":
-                try {
 //                        String information = infoOwner.getTranspartation();
-                    String information = "Перевозка";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 3 работает");
+                    SendMessage answer8 = new SendMessage(chatId, RECOMMENDATIONS_FOR_TRANSPORTATION_DOG.getMessage());
+                    logger.warn("IMPORTANT transportation dogs");
+                    telegramBot.execute(answer8);
                 break;
             case "arrangementPuppy":
-                try {
-                    String information = "Щеночки";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 4 работает");
+                    SendMessage answer9 = new SendMessage(chatId, RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_FOR_PUPPY.getMessage());
+                    logger.warn("IMPORTANT arrangement puppy");
+                    telegramBot.execute(answer9);
                 break;
             case "arrangementDog":
-                try {
-                    String information = "Собачки";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 5 работает");
+                    SendMessage answer10 = new SendMessage(chatId, RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_FOR_ADULT_DOG.getMessage());
+                    logger.warn("IMPORTANT arrangement dog");
+                    telegramBot.execute(answer10);
                 break;
             case "arrangementDogInvalid":
-                try {
-                    String information = "Собачки 2";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 6 работает");
+                    SendMessage answer11 = new SendMessage(chatId, RECOMMENDATIONS_FOR_HOME_IMPROVEMENT_DISABLED_DOG.getMessage());
+                    logger.warn("IMPORTANT arrangement dog invalid");
+                    telegramBot.execute(answer11);
                 break;
             case "cynologist":
-                try {
-                    String information = "Тест";
-                    SendMessage  answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 7 работает");
+                    SendMessage  answer12 = new SendMessage(chatId, RECOMMENDATIONS_OF_DOG_CYNOLOGISTS.getMessage());
+                    logger.warn("IMPORTANT cynologist");
+                    telegramBot.execute(answer12);
                 break;
             case "goodCynologists":
-                try {
-                    String information = "Тест 2";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 8 работает");
+                    SendMessage answer13 = new SendMessage(chatId,  GOOD_CYNOLOGISTS.getMessage());
+                    logger.warn("IMPORTANT good cynologists");
+                    telegramBot.execute(answer13);
                 break;
             case "reject":
-                try {
-                    String information = "Тест3";
-                    SendMessage answer = new SendMessage(chatId, information);
-                    logger.warn("IMPORTANT" + information);
-                    telegramBot.execute(answer);
-                } catch (NullPointerException e) {
-                    logger.warn("Инфopмации в базе данных нет");
-                }
-                logger.info("Кнопка 9 работает");
+                    SendMessage answer14 = new SendMessage(chatId, REJECTS_DOGS.getMessage());
+                    logger.warn("IMPORTANT  reject");
+                    telegramBot.execute(answer14);
                 break;
         }
     }

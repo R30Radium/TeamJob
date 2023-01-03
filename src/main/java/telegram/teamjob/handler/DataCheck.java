@@ -23,7 +23,7 @@ public class DataCheck {
                 update.callbackQuery().data().equals(BUTTON_RECORD.getMessage()) ||
                 update.callbackQuery().data().equals(BUTTON_HELP.getMessage())) {
             dogButtonAnswers.checkButtonAnswerDogs(update);
-        } else if (update.callbackQuery().data().equals("info") || //команды для меню первого этапа
+        } else if (update.callbackQuery().data().equals("info") || //команды для собачьего меню
                 update.callbackQuery().data().equals("way") ||
                 update.callbackQuery().data().equals("address") ||
                 update.callbackQuery().data().equals("safety") ||
@@ -43,19 +43,20 @@ public class DataCheck {
         }
     }
 
-    public void checkCatButtonAnswer(Update update) {
+    public void checkCatButtonAnswer(Update update) {          //команды для кошачьего меню
         if (update.callbackQuery().data().equals(BUTTON_INFO_CAT.getMessage()) ||
                 update.callbackQuery().data().equals(BUTTON_INSTRUCTION_CAT.getMessage()) ||
                 update.callbackQuery().data().equals(BUTTON_RECORD_CAT.getMessage()) ||
                 update.callbackQuery().data().equals(BUTTON_HELP_CAT.getMessage())) {
             catButtonAnswers.checkButtonAnswerCats(update);
-        } else if (update.callbackQuery().data().equals("infoCat") || //команды для меню первого этапа
+        } else if (update.callbackQuery().data().equals("infoCat") ||
                 update.callbackQuery().data().equals("wayCat") ||
                 update.callbackQuery().data().equals("addressCat") ||
+                update.callbackQuery().data().equals("securityContactCat") ||
                 update.callbackQuery().data().equals("safetyCat") ||
                 update.callbackQuery().data().equals("volunteerCat") ||
                 update.callbackQuery().data().equals("workTimeCat") ||
-                update.callbackQuery().data().equals("contact") ||
+                update.callbackQuery().data().equals("contactCat") ||
                 update.callbackQuery().data().equals("rulesCat") ||
                 update.callbackQuery().data().equals("docsCat") ||
                 update.callbackQuery().data().equals("transportationCat") ||

@@ -12,6 +12,7 @@ import telegram.teamjob.handler.DataCheck;
 import telegram.teamjob.handler.button_answers.StatusChecker;
 import telegram.teamjob.implementation.*;
 import telegram.teamjob.implementation.Cat.CatPhotoServiceImpl;
+import telegram.teamjob.implementation.Cat.ContactCatServiceImpl;
 import telegram.teamjob.implementation.Cat.RecordCatServiceImpl;
 import telegram.teamjob.implementation.Cat.UserCatServiceImpl;
 import telegram.teamjob.repositories.Cat.RecordCatRepository;
@@ -22,6 +23,8 @@ import java.io.IOException;
 
 import static telegram.teamjob.constants.BotButtonEnum.BUTTON_CHECK_CONTACT;
 import static telegram.teamjob.constants.BotMessageEnum.*;
+import static telegram.teamjob.constants.Cat.BotButtonForCat.BUTTON_CONTACT_CAT;
+import static telegram.teamjob.implementation.TelegramBotUpdatesListener.CONTACT_TEXT_PATTERN;
 
 @Service
 public class MessageHendlerClient {
@@ -38,9 +41,15 @@ public class MessageHendlerClient {
     private final UserCatServiceImpl userCatService;
     private final DataCheck dataCheck;
     private final StatusChecker statusChecker;
+
     private final Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
-    public MessageHendlerClient(TelegramBot telegramBot, ClientServiceImpl clientService, ContactServiceImpl contactService, RecordServiceImpl recordService, PetPhotoServiceImpl petPhotoService, RecordRepository recordRepository, UserRepository userRepository, RecordCatServiceImpl recordCatService, CatPhotoServiceImpl catPhotoService, RecordCatRepository recordCatRepository, UserCatServiceImpl userCatService, DataCheck dataCheck, StatusChecker statusChecker) {
+    public MessageHendlerClient(TelegramBot telegramBot, ClientServiceImpl clientService,
+                                ContactServiceImpl contactService, RecordServiceImpl recordService,
+                                PetPhotoServiceImpl petPhotoService, RecordRepository recordRepository,
+                                UserRepository userRepository, RecordCatServiceImpl recordCatService,
+                                CatPhotoServiceImpl catPhotoService, RecordCatRepository recordCatRepository,
+                                UserCatServiceImpl userCatService, DataCheck dataCheck, StatusChecker statusChecker) {
         this.telegramBot = telegramBot;
         this.clientService = clientService;
         this.contactService = contactService;
@@ -54,9 +63,8 @@ public class MessageHendlerClient {
         this.userCatService = userCatService;
         this.dataCheck = dataCheck;
         this.statusChecker = statusChecker;
+
     }
-
-
     public void checkMessageFromCatClient(Update update) {
         if (update.callbackQuery() != null) {
             logger.info("CallBackQuery processing for CatClient");
@@ -166,3 +174,4 @@ public class MessageHendlerClient {
         statusChecker.shelterStatus(update);
     }
 }
+
